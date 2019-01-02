@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 namespace CodeStory
 {
 	[Serializable]
@@ -40,6 +41,16 @@ namespace CodeStory
 
 		private bool doubleClick = false;
 
+		void Update()
+		{
+			/*Vector3 v3T = Input.mousePosition;
+			Vector3 GOPos = gameObject.transform.position;
+			v3T.z = GOPos.z;
+			v3T = Camera.main.ScreenToWorldPoint(v3T);
+			Vector3 forward = transform.TransformDirection(Vector3.forward) * 10;
+			Debug.DrawRay(v3T, forward, Color.green, 1000.0f);*/
+		}
+
 		private void OnMouseDown()
 		{
 			lastMousePos = Input.mousePosition;
@@ -64,6 +75,7 @@ namespace CodeStory
 			time = Time.time;
 		}
 
+
 		void DeleteObject()
 		{
 			triggerAction.Invoke(gameObject);
@@ -85,22 +97,40 @@ namespace CodeStory
 
 		void ChangeText()
 		{
+			Vector3 v3T = Input.mousePosition;
+			Vector3 GOPos = gameObject.transform.position;
+			v3T.z = GOPos.z;
+			v3T = Camera.main.ScreenToWorldPoint(v3T);
+			Vector3 forward = transform.TransformDirection(Vector3.forward) * 10;
+			Debug.DrawRay(v3T, forward, Color.green, 1000.0f);
 
-			/*RaycastHit[] hits;
-			hits = Physics.RaycastAll(transform.position, transform.forward, 100.0F);
+			//clanky - octobubbles Yolag
+			RaycastHit[] hits;
+			hits = Physics.RaycastAll(v3T, forward, 100.0F);
 
 			for (int i = 0; i < hits.Length; i++)
 			{
 				RaycastHit hit = hits[i];
 				Renderer rend = hit.transform.GetComponent<Renderer>();
-				Debug.Log("asdas " +hit.transform.name);
-			}*/
-				triggerAction.Invoke(gameObject);
-				Transform g1 = gameObject.transform.FindChild("Background");
-				TextMeshProUGUI textM = g1.GetComponentInChildren<TextMeshProUGUI>();
-				Debug.Log(textM.name);
-				
+				//TODO: set size for clicks (when too close to table, error)
+				Debug.Log(hit.collider.transform.name);
 			}
+
+			/*RaycastHit hit;
+			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+			//Debug.DrawRay(Input.mousePosition, ray.direction, Color.green);
+			if (Physics.Raycast(ray, out hit))
+			{
+				Transform objectHit = hit.transform;
+
+				Debug.Log(hit.collider.name);
+			}*/
+
+
+			//triggerAction.Invoke(gameObject);
+			//TextMeshProUGUI textM = gameObject.GetComponent<TextMeshProUGUI>();
+
+		}
 
 		//create New Association
 		void OnRealMouseDown()
@@ -124,6 +154,9 @@ namespace CodeStory
 				{
 					Graph g = GetComponentInParent<Graph>();
 					GameObject c = g.GetComponent<Graph>().AddEdge(a, b);
+					Vector3 p = c.transform.position;
+					p.z -= 2.0f;
+					c.transform.position = p;
 					g.GetComponent<Graph>().UpdateGraph();
 					c.tag = "line";
 				}
@@ -146,10 +179,15 @@ namespace CodeStory
 			v3T = Camera.main.ScreenToWorldPoint(v3T);
 
 			Graph graph = GetComponentInChildren<Graph>();
-			Vector3 graphPosition = graph.transform.position;
+			Vector3 graphPosition = graph.transform.localPosition;
 			GameObject a = graph.GetComponent<Graph>().AddNode();
-			a.transform.position = new Vector3(v3T.x, v3T.y, graphPosition.z);
+			a.transform.localPosition = new Vector3(v3T.x, v3T.y, graphPosition.z - 10f);
+
+
 			a.tag = "class";
+			Debug.Log("Position of new class " +a.transform.position);
+			Debug.Log("Position of table " +graph.transform.position);
+			Debug.Log("Position of go " + gameObject.transform.position);
 			graph.GetComponent<Graph>().UpdateGraph();
 		}
 
@@ -160,15 +198,15 @@ namespace CodeStory
 
 		void OnMouseDrag()
 		{
+			//TODO: is local Position good ?
 			triggerAction.Invoke(gameObject);
 			if (gameObject.tag == "table" || gameObject.tag == "class")
 			{
-				Debug.Log("DRAG");
 				Vector3 delta = Input.mousePosition - lastMousePos;
-				Vector3 pos = transform.position;
+				Vector3 pos = transform.localPosition;
 				pos.y += delta.y * dragSpeed;
 				pos.x += delta.x * dragSpeed;
-				transform.position = pos;
+				transform.localPosition = pos;
 				lastMousePos = Input.mousePosition;
 
 			}

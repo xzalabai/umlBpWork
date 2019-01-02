@@ -80,7 +80,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37fc083bb470f8c42b42d73ecf18c5e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nodePrefab: {fileID: 1226358218867430, guid: a6ff44ea34772e341bd52a30b491e1f7, type: 2}
+  nodePrefab: {fileID: 1825617846055108, guid: a6ff44ea34772e341bd52a30b491e1f7, type: 2}
   edgePrefab: {fileID: 1786522367462340, guid: 02b82085b7a6c4c49b9b89739fc6ed04, type: 2}
   factor: 2
   depth: 0

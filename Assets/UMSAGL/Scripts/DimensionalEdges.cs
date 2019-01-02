@@ -31,8 +31,12 @@ public class DimensionalEdges : MonoBehaviour {
 	public void updateDimensionalAssociation(LineRenderer line, GameObject from, GameObject to)
 	{
 		var points = new Vector3[2];
-		points[0] = from.transform.position;
-		points[1] = to.transform.position;
+		Vector3 fromPoint = from.transform.position;
+		Vector3 toPoint = to.transform.position;
+		fromPoint.y -= 20;
+		toPoint.y -= 20;
+		points[0] = fromPoint;
+		points[1] = toPoint;
 		line.SetPositions(points);
 	}
 

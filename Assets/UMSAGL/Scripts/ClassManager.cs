@@ -11,9 +11,9 @@ public class ClassManager : MonoBehaviour {
 	public GameObject table2;
 	public Graph graph1;
 	public Graph graph2;
-	List<GameObject> classes = new List<GameObject>();
 	GameObject test1, test2, test3, test4, test5;
 	private List<Vector3> sample = new List<Vector3>();
+	private List<GameObject> allClasses = new List<GameObject>();
 	[SerializeField]
 	private float maxAngle = 70f;
 
@@ -34,8 +34,8 @@ public class ClassManager : MonoBehaviour {
 		graph1 = go.GetComponent<Graph>();
 		graph2 = go2.GetComponent<Graph>();
 
-		graph1.transform.position = new Vector3(0.0f, 0.0f, 115.0f);
-		graph2.transform.position = new Vector3(0.0f, 0.0f, 302.0f);
+		graph1.transform.position = new Vector3(0.0f, 0.0f, 120.0f);
+		graph2.transform.position = new Vector3(0.0f, 0.0f, 430.0f);
 
 		table1 = GameObject.Find("table1");
 		graph1.transform.parent = table1.transform;
@@ -50,6 +50,51 @@ public class ClassManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
+	}
+
+
+
+
+
+	public GameObject cylinder;
+	List<GameObject> allcylinders = new List<GameObject>();
+	public bool isHidden = true;
+
+	//this function allow to show metric (later with algorhitm), or when the metrics are shown, hide them
+	public void ShowMetric()
+	{
+		if (isHidden)
+		{
+			GameObject[] classes;
+			classes = GameObject.FindGameObjectsWithTag("class");
+
+			foreach (GameObject c in classes)
+			{
+				System.Random rnd = new System.Random();
+				int month = rnd.Next(15, 30);
+
+				var cy = GameObject.Instantiate(cylinder);
+				cy.transform.position = new Vector3(c.transform.position.x + 40f, c.transform.position.y + 20f, c.transform.position.z - month);
+
+				Vector3 scale = cy.transform.localScale;
+				scale.y = month;
+				cy.transform.localScale = scale;
+
+				cy.transform.parent = c.transform;
+				allcylinders.Add(cy);
+			}
+			isHidden = false;
+		}
+
+		else
+		{
+			foreach (GameObject c in allcylinders)
+			{
+				Destroy(c);
+			}
+			isHidden = true;
+		}
+		
 	}
 	//update dimensional associations
 	public void updateDimensionalAssociation(LineRenderer line, GameObject from, GameObject to)
@@ -101,6 +146,8 @@ public void createDimensionalAssociation(GameObject from, GameObject to)
 
 		n.transform.position = new Vector3(pointX, pointY, g.transform.position.z-2.0f);
 		n.tag = "class";
+
+		allClasses.Add(n);
 
 		return n;
 	}

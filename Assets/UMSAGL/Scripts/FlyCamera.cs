@@ -30,7 +30,10 @@ using TMPro;
 		public bool sideView = false;
 		public bool cameraIsInFront;
 		public bool lookAt = true;
-		public GameObject searchedTable;
+
+		public Vector3 searchedPosition;
+		public Transform searchedTable;
+
 		public Vector3 movement;
 		public Vector3 lastTablePosition;
 
@@ -47,9 +50,8 @@ using TMPro;
 		void Update()
 		{
 			if (goToTable)
-			{
-				flyToTable(searchedTable);
-			}
+				flyToTable(searchedPosition, searchedTable);
+			
 			if (Input.GetMouseButton(1))
 			{
 				lastMouse = Input.mousePosition - lastMouse;
@@ -83,121 +85,23 @@ using TMPro;
 			p *= Time.deltaTime;
 			transform.Translate(p);
 		}
-		public void flyToTable(GameObject table)
+
+
+		//fly with camera to some table, and look on table
+		public void flyToTable(Vector3 searchedPosition, Transform searchedTable)
 		{
-		if (goToTable && searchedTable)
+			transform.position = Vector3.MoveTowards(transform.position, searchedPosition, 400 * Time.deltaTime);
+			transform.LookAt(searchedTable);
+
+			if (transform.position == searchedPosition)
 			{
-			if (lookAt) transform.LookAt(table.transform);
-
-			if (direction == "FrontLeft")
-				CameraIsInFrontRight(table);
-			else if (direction == "FrontRight")
-				CameraIsInFrontLeft(table);
-			else if (direction == "BackRight")
-				CameraIsBehindRight(table);
-			else if (direction == "BackLeft")
-				CameraIsBehindLeft(table);
+			goToTable = false;
+			transform.LookAt(searchedTable);
 			}
+				
 		}
-	public void CameraIsBehindRight(GameObject table)
-	{
-		//Debug.Log("tableZ - " + table.transform.position.z + "camZ " + transform.position.z);
-		if ((table.transform.position.z - transform.position.z) > -5.0f && (table.transform.position.z - transform.position.z) < 5.0f)
-			lookAt = false;
-	
-		if (table.transform.position.z - transform.position.z < 200.0f)
-		{
-			movement = Vector3.forward;
-			transform.Translate(movement * 2f);
-		}
-		else
-			frontView = true;
-
-		if (table.transform.position.x - transform.position.x < 10)
-		{
-			movement = Vector3.right;
-			transform.Translate(movement * 2f);
-		}
-		else
-			sideView = true;
-
-		if (sideView && frontView)
-		{
-			goToTable = false;
-		}
-	}
-
-	public void CameraIsBehindLeft(GameObject table)
-	{
-		if ((table.transform.position.z - transform.position.z) > -5.0f && (table.transform.position.z - transform.position.z) < 5.0f)
-			lookAt = false;
 
 
-		Debug.Log(table.transform.position.z - transform.position.z);
-		if (table.transform.position.z - transform.position.z < 200.0f)
-		{
-			movement = Vector3.forward;
-			transform.Translate(movement * 2f);
-		}
-		else
-			frontView = true;
-		
-		if (table.transform.position.x - transform.position.x < 10)
-		{
-			movement = Vector3.left;
-			transform.Translate(movement * 2f);
-		}
-		else
-			sideView = true;
-
-		if (sideView && frontView)
-		{
-			goToTable = false;
-		}			
-	}
-	public void CameraIsInFrontRight(GameObject table)
-	{
-		if (Math.Abs(table.transform.position.z - transform.position.z) > 270.0f)
-		{
-			movement = Vector3.forward;
-			transform.Translate(movement * 2f);
-		}
-		else
-			frontView = true;
-		if (Math.Abs(table.transform.position.x - transform.position.x) > 10)
-		{
-			movement = Vector3.left;
-			transform.Translate(movement * 2f);
-		}
-		else
-			sideView = true;
-
-		if (sideView && frontView)
-			goToTable = false;
-
-	}
-
-	public void CameraIsInFrontLeft(GameObject table)
-	{
-		if (Math.Abs(table.transform.position.z - transform.position.z) > 270.0f)
-		{
-			movement = Vector3.forward;
-			transform.Translate(movement * 2f);
-		}
-		else
-			frontView = true;
-		if (Math.Abs(table.transform.position.x - transform.position.x) > 10)
-		{
-			movement = Vector3.right;
-			transform.Translate(movement * 2f);
-		}
-		else
-			sideView = true;
-
-		if (sideView && frontView)
-			goToTable = false;
-
-	}
 	// Returns the basic values, if it's 0 than it's not active.
 	private Vector3 GetBaseInput()
 		{
