@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using TMPro;
+using System;
 
 public class ClassManager : MonoBehaviour {
 
@@ -22,9 +23,7 @@ public class ClassManager : MonoBehaviour {
 		public GameObject from;
 		public GameObject to;
 	};
-
-
-
+	
 	List<dimensionalAssociation> allDimensionalAs = new List<dimensionalAssociation>();
 
 	// Use this for initialization
@@ -37,10 +36,10 @@ public class ClassManager : MonoBehaviour {
 		graph1.transform.position = new Vector3(0.0f, 0.0f, 120.0f);
 		graph2.transform.position = new Vector3(0.0f, 0.0f, 430.0f);
 
-		table1 = GameObject.Find("table1");
+		table1 = GameObject.Find("1");
 		graph1.transform.parent = table1.transform;
 
-		table2 = GameObject.Find("table2");
+		table2 = GameObject.Find("2");
 		graph2.transform.parent = table2.transform;
 
 		//GameObject a = createObject(50,50, graph1);
@@ -51,9 +50,6 @@ public class ClassManager : MonoBehaviour {
 	void Update () {
 
 	}
-
-
-
 
 
 	public GameObject cylinder;
@@ -70,14 +66,16 @@ public class ClassManager : MonoBehaviour {
 
 			foreach (GameObject c in classes)
 			{
-				System.Random rnd = new System.Random();
-				int month = rnd.Next(15, 30);
-
+				string[] nameOfClass = c.name.Split(' ');
+				float sizeOfCylinder = Int32.Parse(nameOfClass[1]);
+				
 				var cy = GameObject.Instantiate(cylinder);
-				cy.transform.position = new Vector3(c.transform.position.x + 40f, c.transform.position.y + 20f, c.transform.position.z - month);
+				cy.GetComponent<Renderer>().material.SetColor("_Color", UnityEngine.Random.ColorHSV());
+			
+				cy.transform.position = new Vector3(c.transform.position.x + 40f, c.transform.position.y + 20f, c.transform.position.z - sizeOfCylinder);
 
 				Vector3 scale = cy.transform.localScale;
-				scale.y = month;
+				scale.y = sizeOfCylinder;
 				cy.transform.localScale = scale;
 
 				cy.transform.parent = c.transform;
@@ -106,7 +104,7 @@ public class ClassManager : MonoBehaviour {
 	}
 
 //create association between 2 dimensions
-public void createDimensionalAssociation(GameObject from, GameObject to)
+public void createDimensionalAssociation(GameObject from, GameObject to)	
 	{
 		GameObject obj = new GameObject("line");
 		LineRenderer lineRenderer = obj.AddComponent<LineRenderer>();

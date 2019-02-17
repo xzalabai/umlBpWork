@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class DimensionalEdges : MonoBehaviour {
 
+
+	public GameObject linePrefab;
+	private int dimensionalEdgesCounter = 0;
 	struct dimensionalAssociation
 	{
 		public LineRenderer line;
@@ -24,8 +27,19 @@ public class DimensionalEdges : MonoBehaviour {
 
 	public void deleteDimensionalAssociation(LineRenderer line)
 	{
-		dimensionalAssociation structure = allDimensionalAs.Find(x => x.line == line);
-		Debug.Log(structure.from.name);
+		//dimensionalAssociation structure = allDimensionalAs.Find(x => x.line == line);
+	//	Debug.Log(structure.from.name);
+	}
+
+	public void DeleteNestedAssociations(int searchedTable)
+	{
+		foreach (dimensionalAssociation a in allDimensionalAs)
+		{
+			if (a.from.GetComponentInParent<Table>().name == searchedTable.ToString() || a.to.GetComponentInParent<Table>().name == searchedTable.ToString())
+			{
+				Debug.Log("ide");
+			}
+		}
 	}
 
 	public void updateDimensionalAssociation(LineRenderer line, GameObject from, GameObject to)
@@ -43,25 +57,31 @@ public class DimensionalEdges : MonoBehaviour {
 
 	public void createDimensionalAssociation(GameObject from, GameObject to)
 	{
-		GameObject obj = new GameObject("3dLine");
-		obj.tag = "dimensionalLine";
-		LineRenderer lineRenderer = obj.AddComponent<LineRenderer>();
-
+		var go = Instantiate(linePrefab);
+		LineRenderer l = go.GetComponent<LineRenderer>();
 		dimensionalAssociation newAssociation;
-		//LineRenderer lineRenderer = gameObject.AddComponent<LineRenderer>();
-
+		
 		//create line between 2 classes
 		var points = new Vector3[2];
 		points[0] = from.transform.position;
 		points[1] = to.transform.position;
-		lineRenderer.SetPositions(points);
+		//lineRenderer.SetPositions(points);
+		l.SetPositions(points);
+
+		//set name
+		l.name = dimensionalEdgesCounter.ToString();
+		dimensionalEdgesCounter++;
 
 		//create struct (later added to list of structures with connections
-		newAssociation.line = lineRenderer;
+		newAssociation.line = l;
 		newAssociation.from = from;
 		newAssociation.to = to;
 
 		//add connection to the list of 3d connections
 		allDimensionalAs.Add(newAssociation);
+
+		
+
+		//return obj;
 	}
 }

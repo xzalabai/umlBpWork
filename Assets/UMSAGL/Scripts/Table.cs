@@ -8,20 +8,25 @@ public class Table : MonoBehaviour {
 
 	public bool separateTable = false;
 	public bool moveTable = false;
+	public Vector3 defaultPosition;
 
 	public bool flyToFront = false;
 	public Vector3 targetPositionToFront;
 
 	public bool rotateTable = false;
+	public Vector3 whereToLook;
 	public bool iamSeparated = false;
-	public bool moving = true;
 	public int uniqueId;
 	public GameObject cylinder;
+	public Camera cam;
+	
 
 	public Vector3 targetPosition;
 
 	public string direction = "";
 	void Start () {
+		//FlyCamera scriptCamera = cam.GetComponent<FlyCamera>();
+		
 		//CreateMetric();
 		//GetComponent<MeshRenderer>().sharedMaterial.color = new Color(1.0f, 1.0f, 1.0f, 0.3f);
 		//GetComponent<MeshRenderer>().sharedMaterial.color.a = 0.4f;
@@ -29,65 +34,66 @@ public class Table : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (moveTable && moving)
-		transform.position = Vector3.MoveTowards(transform.position, targetPosition, 800 * Time.deltaTime);
+		
+		//transform.LookAt(Camera.main.transform.position);
+
+
+		if (moveTable)
+		{
+			transform.position = Vector3.MoveTowards(transform.position, targetPosition, 1000 * Time.deltaTime);
+			transform.LookAt(whereToLook);
+		}
+			
 
 		if (moveTable && transform.position == targetPosition)
 		{
-			Debug.Log("UZ NIE SEM");
-			moving = false;
 			moveTable = false;
-			rotateTable = true;
+			whereToLook = Vector3.forward; //default look
 		}
 
-		if (direction == "left")
-			RotationLeftTable();
-		if (direction == "right")
-			RotationRightTable();
-		if (direction == "none")
-		{
-			rotateTable = false;
-		}
-
-		if (flyToFront)
-			FlyToFront(targetPositionToFront);
+		//if (flyToFront)
+			//FlyToFront(targetPositionToFront);
 
 
 	}
 
-	public void FlyToFront(Vector3 targetPosition)
+	/*public void FlyToFront(Vector3 targetPosition)
 	{
-		transform.position = Vector3.MoveTowards(transform.position, targetPosition, 400 * Time.deltaTime);
+		transform.position = Vector3.MoveTowards(transform.position, targetPosition, 800 * Time.deltaTime);
 
 		if (transform.position == targetPosition)
 			flyToFront = false;
-	}
+	}*/
 
 	public void RotationRightTable()
 	{
-		if (rotateTable)
+		Debug.Log(Time.deltaTime);
+		transform.LookAt(Camera.main.transform.position);
+		rotateTable = false;
+		/*if (rotateTable)
 			transform.Rotate(Vector3.up * Time.deltaTime * 10, Space.World);
 		if (transform.rotation.y > 0.30f)
 		{
 			rotateTable = false;
-		}
+		}*/
 	}
 
 	public void RotationLeftTable()
 	{
-		if (rotateTable)
+		transform.LookAt(Camera.main.transform.position);
+		rotateTable = false;
+		/*if (rotateTable)
 			transform.Rotate(Vector3.down * Time.deltaTime * 10, Space.World);
 		if (transform.rotation.y < -0.30f)
 		{
 
 			rotateTable = false;
-		}
+		}*/
 	}
 
 	public void moveTableToOrder()
 	{
-		
-			
+
 	}
 
 	/*public void CreateMetric()

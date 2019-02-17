@@ -1,10 +1,8 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.SceneManagement;
 namespace CodeStory
 {
 	[Serializable]
@@ -22,6 +20,8 @@ namespace CodeStory
 
 		public GameObjectEvent triggerAction;
 
+		public GameObject textManagerScript;
+
 		static GameObject a = null;
 		static GameObject b = null;
 
@@ -37,12 +37,33 @@ namespace CodeStory
 
 		private float delta;
 
+		private float idOfClass = 1;
+
 		private float time;
 
 		private bool doubleClick = false;
 
+		void Start()
+		{
+			textManagerScript = GameObject.Find("TextManager");
+		}
+
 		void Update()
 		{
+
+			if (writingInClass && Input.GetKey(KeyCode.Return))
+			{
+				string t = textManagerScript.GetComponent<TextManager>().GetInputFieldText();
+				string parsedText = t.Replace(";", "\n");
+				whereToWrite.text = (t.Replace("; ", "\n"));
+				//whereToWrite.text = t;
+
+				//whereToWrite.text = "AHOj" + "\n" + "apfpp";
+				whereToWrite = null;
+				textManagerScript.GetComponent<TextManager>().HideOrUnihdeInputField(true);
+				writingInClass = false;
+			}
+			
 			/*Vector3 v3T = Input.mousePosition;
 			Vector3 GOPos = gameObject.transform.position;
 			v3T.z = GOPos.z;
@@ -95,8 +116,12 @@ namespace CodeStory
 			}
 		}
 
-		void ChangeText()
-		{
+
+		bool writingInClass = false;
+		TextMeshProUGUI whereToWrite;
+		public void ChangeText()
+		{ 
+
 			Vector3 v3T = Input.mousePosition;
 			Vector3 GOPos = gameObject.transform.position;
 			v3T.z = GOPos.z;
@@ -104,17 +129,26 @@ namespace CodeStory
 			Vector3 forward = transform.TransformDirection(Vector3.forward) * 10;
 			Debug.DrawRay(v3T, forward, Color.green, 1000.0f);
 
-			//clanky - octobubbles Yolag
 			RaycastHit[] hits;
-			hits = Physics.RaycastAll(v3T, forward, 100.0F);
-
+			hits = Physics.RaycastAll(v3T, forward, 500.0F);
 			for (int i = 0; i < hits.Length; i++)
 			{
 				RaycastHit hit = hits[i];
 				Renderer rend = hit.transform.GetComponent<Renderer>();
 				//TODO: set size for clicks (when too close to table, error)
 				Debug.Log(hit.collider.transform.name);
+				if (hit.collider.transform.name == "Methods" || hit.collider.transform.name == "Header" || hit.collider.transform.name == "Attributes")
+				{
+					textManagerScript.GetComponent<TextManager>().HideOrUnihdeInputField(false);
+					TextMeshProUGUI t = hit.collider.transform.GetComponent<TextMeshProUGUI>();
+					textManagerScript.GetComponent<TextManager>().SetInputFieldText(t.text);
+					writingInClass = true;
+					whereToWrite = t;
+				}
+
 			}
+
+			//yield return waitForKeyPress(KeyCode.Space);
 
 			/*RaycastHit hit;
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -129,7 +163,22 @@ namespace CodeStory
 
 			//triggerAction.Invoke(gameObject);
 			//TextMeshProUGUI textM = gameObject.GetComponent<TextMeshProUGUI>();
+		
+		}
 
+		private IEnumerator waitForKeyPress(KeyCode key)
+		{
+			bool done = false;
+			while (!done) // essentially a "while true", but with a bool to break out naturally
+			{
+				if (Input.GetKeyDown(key))
+				{
+					done = true; // breaks the loop
+				}
+				yield return null; // wait until next frame, then continue execution from here (loop continues)
+			}
+
+			// now this function returns
 		}
 
 		//create New Association
@@ -142,6 +191,18 @@ namespace CodeStory
 				a = gameObject;
 			else
 				b = gameObject;
+
+			//if we didnt tagged class
+			if (isClass(a) == false || isClass(b) == false)
+			{
+				a = null; b = null; parent1 = null; parent2 = null;
+			}
+
+			//if the 2 tagged objects are same, we are not assigning them a association
+			if (a == b)
+			{
+				a = null; b = null; parent1 = null; parent2 = null;
+			}
 
 			//assign parent of first, then parent of second
 			if (parent1 == null)
@@ -160,24 +221,49 @@ namespace CodeStory
 					g.GetComponent<Graph>().UpdateGraph();
 					c.tag = "line";
 				}
-				else
+				else if (a != null && b != null)
 				{
 					GameObject obj = GameObject.Find("DimensionalEdgesManager");
 					obj.GetComponent<DimensionalEdges>().createDimensionalAssociation(a, b);
+
+				}
+				else
+				{
+					//Debug.Log("Not selected");
 				}
 				a = null; b = null;
 				parent1 = null; parent2 = null;
 			}
 		}
+
+		public bool isClass(GameObject g)
+		{
+			if (g == null)
+				return true;
+			if (g.tag == "class")
+				return true;
+			return false;
+		}
+
+		public bool isTable(GameObject g)
+		{
+			//Debug.Log(g.tag);
+			if (g.tag == "table")
+				return true;
+			return false;
+		}
 		//create New Class
 		private void OnDoubleClick()
 		{
 			triggerAction.Invoke(gameObject);
+
+			//if we didnt click on table (but on class ..) we will not create another class
+			if (!isTable(gameObject))
+				return;
 			Vector3 v3T = Input.mousePosition;
 			Vector3 GOPos = gameObject.transform.position;
 			v3T.z = GOPos.z;
 			v3T = Camera.main.ScreenToWorldPoint(v3T);
-
 			Graph graph = GetComponentInChildren<Graph>();
 			Vector3 graphPosition = graph.transform.localPosition;
 			GameObject a = graph.GetComponent<Graph>().AddNode();
@@ -185,6 +271,8 @@ namespace CodeStory
 
 
 			a.tag = "class";
+			a.name = "Class " + idOfClass++.ToString();
+			//idOfClass++;
 			Debug.Log("Position of new class " +a.transform.position);
 			Debug.Log("Position of table " +graph.transform.position);
 			Debug.Log("Position of go " + gameObject.transform.position);

@@ -27,6 +27,7 @@ using TMPro;
 		public float camSens = 0.15f;		  // Mouse sensitivity
 		public bool goToTable = false;        // go to separate Table
 		public bool frontView = false;
+		public bool goToDefaultPosition = false;
 		public bool sideView = false;
 		public bool cameraIsInFront;
 		public bool lookAt = true;
@@ -47,59 +48,78 @@ using TMPro;
 
 
 	//TODO: refactor this code...
-		void Update()
+	void Update()
+	{
+		if (goToTable)
+			flyToTable(searchedPosition, searchedTable);
+
+		if (goToDefaultPosition)
+			FlyToDefaultPosition();
+
+
+		if (Input.GetMouseButton(1))
 		{
-			if (goToTable)
-				flyToTable(searchedPosition, searchedTable);
-			
-			if (Input.GetMouseButton(1))
-			{
-				lastMouse = Input.mousePosition - lastMouse;
-				lastMouse = new Vector3(-lastMouse.y * camSens, lastMouse.x * camSens, 0);
-				lastMouse = new Vector3(transform.eulerAngles.x + lastMouse.x, transform.eulerAngles.y + lastMouse.y, 0);
-				transform.eulerAngles = lastMouse;
-			}
-			lastMouse = Input.mousePosition;
+			lastMouse = Input.mousePosition - lastMouse;
+			lastMouse = new Vector3(-lastMouse.y * camSens, lastMouse.x * camSens, 0);
+			lastMouse = new Vector3(transform.eulerAngles.x + lastMouse.x, transform.eulerAngles.y + lastMouse.y, 0);
+			transform.eulerAngles = lastMouse;
+		}
+		lastMouse = Input.mousePosition;
 
-			if (IgnoredInputs.Any(item => item.GetComponentInChildren<TMP_InputField>()?.isFocused == true))
-			{
-				return;
-			}
-
-			// Keyboard commands
-			Vector3 p = GetBaseInput();
-			if (Input.GetKey(KeyCode.LeftShift))
-			{
-				totalRun += Time.deltaTime;
-				p *= totalRun * shiftAdd;
-				p.x = Mathf.Clamp(p.x, -maxShift, maxShift);
-				p.y = Mathf.Clamp(p.y, -maxShift, maxShift);
-				p.z = Mathf.Clamp(p.z, -maxShift, maxShift);
-			}
-			else
-			{
-				totalRun = Mathf.Clamp(totalRun * 0.5f, 1f, 1000f);
-				p *= mainSpeed;
-			}
-
-			p *= Time.deltaTime;
-			transform.Translate(p);
+		if (IgnoredInputs.Any(item => item.GetComponentInChildren<TMP_InputField>()?.isFocused == true))
+		{
+			return;
 		}
 
-
-		//fly with camera to some table, and look on table
-		public void flyToTable(Vector3 searchedPosition, Transform searchedTable)
+		// Keyboard commands
+		Vector3 p = GetBaseInput();
+		if (Input.GetKey(KeyCode.LeftShift))
 		{
-			transform.position = Vector3.MoveTowards(transform.position, searchedPosition, 400 * Time.deltaTime);
-			transform.LookAt(searchedTable);
+			totalRun += Time.deltaTime;
+			p *= totalRun * shiftAdd;
+			p.x = Mathf.Clamp(p.x, -maxShift, maxShift);
+			p.y = Mathf.Clamp(p.y, -maxShift, maxShift);
+			p.z = Mathf.Clamp(p.z, -maxShift, maxShift);
+		}
+		else
+		{
+			totalRun = Mathf.Clamp(totalRun * 0.5f, 1f, 1000f);
+			p *= mainSpeed;
+		}
 
-			if (transform.position == searchedPosition)
-			{
-			goToTable = false;
-			transform.LookAt(searchedTable);
-			}
+		p *= Time.deltaTime;
+		transform.Translate(p);
+	}
+	
+
+	//camera will fly to default position
+	public void FlyToDefaultPosition()
+	{
+		goToDefaultPosition = true;
+		Vector3 defaultPos = new Vector3(0, 0, -400);
+		transform.position = Vector3.MoveTowards(transform.position, defaultPos, 800 * Time.deltaTime);
+		transform.LookAt(Vector3.forward);
+
+		if (transform.position == defaultPos)
+		{		
+			goToDefaultPosition = false;
+			transform.LookAt(Vector3.forward);
+		}
+	}
+
+	//fly with camera to some table, and look on table
+	public void flyToTable(Vector3 searchedPosition, Transform searchedTable)
+	{
+		transform.position = Vector3.MoveTowards(transform.position, searchedPosition, 800 * Time.deltaTime);
+		transform.LookAt(searchedTable);
+
+		if (transform.position == searchedPosition)
+		{
+		goToTable = false;
+		transform.LookAt(searchedTable);
+		}
 				
-		}
+	}
 
 
 	// Returns the basic values, if it's 0 than it's not active.
