@@ -8,6 +8,7 @@ public class Table : MonoBehaviour {
 
 	public bool separateTable = false;
 	public bool moveTable = false;
+	public bool distanceIsON = false;
 	public Vector3 defaultPosition;
 
 	public bool flyToFront = false;
@@ -34,20 +35,29 @@ public class Table : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
-		//transform.LookAt(Camera.main.transform.position);
 
+
+		
 
 		if (moveTable)
 		{
 			transform.position = Vector3.MoveTowards(transform.position, targetPosition, 1000 * Time.deltaTime);
 			transform.LookAt(whereToLook);
+
+			//this case is when we want table in front of CAMERA (we will stop when table is 20f in front of camera)
+			if (distanceIsON) {
+				if (Vector3.Distance(transform.position, targetPosition) < 250) {
+					moveTable = false;
+					distanceIsON = false;
+				}
+			}
 		}
 			
 
 		if (moveTable && transform.position == targetPosition)
 		{
 			moveTable = false;
+			transform.LookAt(whereToLook);
 			whereToLook = Vector3.forward; //default look
 		}
 

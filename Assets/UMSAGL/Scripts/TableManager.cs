@@ -6,6 +6,8 @@ using UnityEngine.Experimental.UIElements;
 using UnityEngine.UI;
 
 
+
+
 /*
  
 	 
@@ -19,6 +21,7 @@ using UnityEngine.UI;
 */
 
 public class TableManager : MonoBehaviour {
+	private Vector3 infinity = new Vector3(0, 0, -500000);
 	public Camera cam;
 	public GameObject prefab;
 	public GameObject graphPrefab;
@@ -182,7 +185,7 @@ public class TableManager : MonoBehaviour {
 				t.defaultPosition = t.transform.position;
 				Vector3 pos = GetToCircle(center, radius, rightAngle);
 
-				t.transform.LookAt(Camera.main.transform.position);
+				//t.transform.LookAt(Camera.main.transform.position);
 				t.whereToLook = Camera.main.transform.position;
 				t.GetComponent<Table>().targetPosition = pos;
 				t.GetComponent<Table>().moveTable = true;
@@ -196,7 +199,7 @@ public class TableManager : MonoBehaviour {
 			foreach (Table t in allTables) {
 				//t.transform.LookAt(Vector3.back);
 				t.GetComponent<Table>().targetPosition = t.defaultPosition;
-				t.whereToLook = Vector3.forward;
+				t.whereToLook = infinity;
 				t.GetComponent<Table>().moveTable = true;
 			}
 			tableShowcaseON = false;
@@ -221,9 +224,7 @@ public class TableManager : MonoBehaviour {
 		//search value that is in slider, then find table with that ID
 		int searchedTable = (int)tableNumber.value;
 		GameObject obj = GameObject.Find(searchedTable.ToString());
-
-		//we want position of camera in front of table, not in camera
-		//TODO: WHY LOCAL POSITION IS WORKING ???
+		
 		Vector3 pos = obj.transform.localPosition;
 		pos.z -= 200f;
 
@@ -249,7 +250,7 @@ public class TableManager : MonoBehaviour {
 			t = obj.GetComponent<Table>();
 			t.defaultPosition = t.transform.position;
 			t.targetPosition = new Vector3(0, 0, 0);
-			t.whereToLook = Vector3.forward;
+			t.whereToLook = infinity;
 			t.moveTable = true;
 			isInFront = true;
 		}
@@ -260,7 +261,7 @@ public class TableManager : MonoBehaviour {
 			GameObject obj = GameObject.Find(searchedTable.ToString());
 			t = obj.GetComponent<Table>();
 			t.targetPosition = t.defaultPosition;
-			t.whereToLook = Vector3.forward;
+			t.whereToLook = infinity;
 			t.moveTable = true;
 			isInFront = false;
 		}
@@ -274,35 +275,27 @@ public class TableManager : MonoBehaviour {
 		{
 			int searchedTable = (int)tableNumber.value;
 			GameObject obj = GameObject.Find(searchedTable.ToString());
-			Vector3 targetPosition = Camera.main.transform.position;
-			targetPosition.z = targetPosition.z - 100;
 			t = obj.GetComponent<Table>();
-			
 			t.defaultPosition = t.transform.position;
-			t.transform.LookAt(Camera.main.transform.position);
-			t.targetPosition = targetPosition;
+			t.targetPosition = Camera.main.transform.position;
 			t.whereToLook = Camera.main.transform.position;
+			t.distanceIsON = true;
 			t.moveTable = true;
-
 			isInFront = true;
 		}
+
 		else
 		{
-			//find table
 			int searchedTable = (int)tableNumber.value;
 			GameObject obj = GameObject.Find(searchedTable.ToString());
 			t = obj.GetComponent<Table>();
-			Vector3 targetPosition = t.defaultPosition;
-
-			t.transform.LookAt(Vector3.forward);
-			t.targetPosition = targetPosition;
-			t.whereToLook = Vector3.forward;
+			t.targetPosition = t.defaultPosition;
+			t.whereToLook = infinity;
 			t.moveTable = true;
 			isInFront = false;
+			t.distanceIsON = false;
 		}
 	}
-
-
 
 
 	public void WorkingMode()
