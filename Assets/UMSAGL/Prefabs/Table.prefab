@@ -117,6 +117,7 @@ MonoBehaviour:
     m_TypeName: CodeStory.GameObjectEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
   textManagerScript: {fileID: 0}
+  cubePrefab: {fileID: 1034658729248092, guid: 31f58d7737e2b144698559368b26032e, type: 2}
 --- !u!114 &114198729502954192
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -130,6 +131,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   separateTable: 0
   moveTable: 0
+  distanceIsON: 0
   defaultPosition: {x: 0, y: 0, z: 0}
   flyToFront: 0
   targetPositionToFront: {x: 0, y: 0, z: 0}
