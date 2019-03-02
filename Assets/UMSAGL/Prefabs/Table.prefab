@@ -117,7 +117,7 @@ MonoBehaviour:
     m_TypeName: CodeStory.GameObjectEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
   textManagerScript: {fileID: 0}
-  cubePrefab: {fileID: 1034658729248092, guid: 31f58d7737e2b144698559368b26032e, type: 2}
+  testCube: {fileID: 1034658729248092, guid: 31f58d7737e2b144698559368b26032e, type: 2}
 --- !u!114 &114198729502954192
 MonoBehaviour:
   m_ObjectHideFlags: 1
