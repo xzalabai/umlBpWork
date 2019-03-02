@@ -257,25 +257,18 @@ namespace CodeStory
 		//create New Class
 		private void OnDoubleClick()
 		{
-			Ray();
+			Vector3 classPosition = Ray();
 			triggerAction.Invoke(gameObject);
 
 			//if we didnt click on table (but on class ..) we will not create another class
 			if (!isTable(gameObject))
 				return;
-			Vector3 v3T = Input.mousePosition;
-			Vector3 GOPos = gameObject.transform.position;
-			v3T.z = GOPos.z;
-
-			GameObject c = Instantiate(testCube);
 			
-			v3T = Camera.main.ScreenToWorldPoint(v3T);
-			
-			c.transform.position = v3T;
 			Graph graph = GetComponentInChildren<Graph>();
-			Vector3 graphPosition = graph.transform.localPosition;
 			GameObject a = graph.GetComponent<Graph>().AddNode();
-			a.transform.localPosition = new Vector3(v3T.x, v3T.y, graphPosition.z - 10f);
+
+			classPosition.z = graph.transform.position.z;
+			a.transform.position = classPosition;
 
 
 			a.tag = "class";
@@ -287,22 +280,34 @@ namespace CodeStory
 			graph.GetComponent<Graph>().UpdateGraph();
 		}
 
-		void Ray()
+		Vector3 Ray()
 		{
 			Vector3 v3T = Input.mousePosition;
 			v3T = Camera.main.ScreenToWorldPoint(v3T);
 			Vector3 forward = transform.TransformDirection(Vector3.back) * 100;
-			Debug.DrawRay(v3T, forward, Color.green, 100022.0f);
-			Debug.Log("Xxxx");
+			//Debug.DrawRay(v3T, forward, Color.green, 100022.0f);
 			RaycastHit[] hits;
 			hits = Physics.RaycastAll(v3T, forward, 50022.0F);
 			for (int i = 0; i < hits.Length; i++)
 			{
 				RaycastHit hit = hits[i];
 				Renderer rend = hit.transform.GetComponent<Renderer>();
-				Debug.Log("hit " +hit.collider.transform.name);
 
+				if (hit.collider.transform.tag == "table")
+				{
+					Debug.Log("AAAAAAA");
+					Vector3 localHit = hit.point;
+
+					Debug.DrawLine(Camera.main.transform.position, hit.point);
+					//Debug.Log("local hit is " + localHit);
+
+					GameObject c = Instantiate(testCube);
+					c.transform.position =localHit;
+					return localHit;
+				}
 			}
+
+			return new Vector3(0, 0, 0);
 		}
 
 		void OnMouseUp()

@@ -103,7 +103,7 @@ public class TableManager : MonoBehaviour {
 		lastTablePosition = lastTablePosition + distanceBetweenTables;
 
 		var graph = GameObject.Instantiate(graphPrefab);
-		graph.transform.position = table.transform.position;
+		graph.transform.position = new Vector3(table.transform.position.x, table.transform.position.y, table.transform.position.z-10f);
 		graph.transform.parent = table.transform;
 
 		

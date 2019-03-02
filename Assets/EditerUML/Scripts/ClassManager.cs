@@ -38,10 +38,12 @@ public class ClassManager : MonoBehaviour {
 
 		table1 = GameObject.Find("1");
 		graph1.transform.parent = table1.transform;
+		graph1.transform.position = new Vector3(table1.transform.position.x, table1.transform.position.y, table1.transform.position.z - 10f);
+		
 
 		table2 = GameObject.Find("2");
 		graph2.transform.parent = table2.transform;
-
+		graph2.transform.position = new Vector3(table2.transform.position.x, table2.transform.position.y, table2.transform.position.z - 10f);
 		//GameObject a = createObject(50,50, graph1);
 		//GameObject b = createObject(120, 120, graph1);
 	}
