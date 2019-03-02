@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -52,6 +53,8 @@ namespace CodeStory
 
 		void Update()
 		{
+
+
 
 			if (writingInClass && Input.GetKey(KeyCode.Return))
 			{
@@ -186,13 +189,13 @@ namespace CodeStory
 		//create New Association
 		void OnRealMouseDown()
 		{
-			triggerAction.Invoke(gameObject);
+			GameObject taggedObj = RayForNewAssociation();
 			
 			//assign first, then second class 
 			if (a == null)
-				a = gameObject;
+				a = taggedObj;
 			else
-				b = gameObject;
+				b = taggedObj;
 
 			//if we didnt tagged class
 			if (isClass(a) == false || isClass(b) == false)
@@ -257,7 +260,7 @@ namespace CodeStory
 		//create New Class
 		private void OnDoubleClick()
 		{
-			Vector3 classPosition = Ray();
+			Vector3 classPosition = RayForNewClass();
 			triggerAction.Invoke(gameObject);
 
 			//if we didnt click on table (but on class ..) we will not create another class
@@ -267,9 +270,9 @@ namespace CodeStory
 			Graph graph = GetComponentInChildren<Graph>();
 			GameObject a = graph.GetComponent<Graph>().AddNode();
 
-			classPosition.z = graph.transform.position.z;
+			//classPosition.z = graph.transform.position.z;
 			a.transform.position = classPosition;
-
+			a.transform.localPosition = new Vector3(a.transform.localPosition.x, a.transform.localPosition.y, a.transform.localPosition.z - 0.05f);
 
 			a.tag = "class";
 			a.name = "Class " + idOfClass++.ToString();
@@ -280,14 +283,14 @@ namespace CodeStory
 			graph.GetComponent<Graph>().UpdateGraph();
 		}
 
-		Vector3 Ray()
+		Vector3 RayForNewClass()
 		{
 			Vector3 v3T = Input.mousePosition;
 			v3T = Camera.main.ScreenToWorldPoint(v3T);
 			Vector3 forward = transform.TransformDirection(Vector3.back) * 100;
 			//Debug.DrawRay(v3T, forward, Color.green, 100022.0f);
 			RaycastHit[] hits;
-			hits = Physics.RaycastAll(v3T, forward, 50022.0F);
+			hits = Physics.RaycastAll(v3T, forward, 1000.0F).OrderBy(h => h.distance).ToArray(); ;
 			for (int i = 0; i < hits.Length; i++)
 			{
 				RaycastHit hit = hits[i];
@@ -295,19 +298,37 @@ namespace CodeStory
 
 				if (hit.collider.transform.tag == "table")
 				{
-					Debug.Log("AAAAAAA");
-					Vector3 localHit = hit.point;
-
+					Debug.Log(hit.collider.transform.name);
 					Debug.DrawLine(Camera.main.transform.position, hit.point);
-					//Debug.Log("local hit is " + localHit);
-
-					GameObject c = Instantiate(testCube);
-					c.transform.position =localHit;
-					return localHit;
+					return hit.point;
 				}
 			}
 
 			return new Vector3(0, 0, 0);
+		}
+
+
+		GameObject RayForNewAssociation()
+		{
+			Vector3 v3T = Input.mousePosition;
+			v3T = Camera.main.ScreenToWorldPoint(v3T);
+			Vector3 forward = transform.TransformDirection(Vector3.forward) * 1000;
+			Debug.Log("seeeem");
+			RaycastHit[] hits; 
+			hits = Physics.RaycastAll(v3T, forward, 8000.0F).OrderBy(h => h.distance).ToArray(); ;
+			for (int i = 0; i < hits.Length; i++)
+			{
+				RaycastHit hit = hits[i];
+				Debug.Log("xx " + hit.collider.transform.tag);
+				Renderer rend = hit.transform.GetComponent<Renderer>();
+				if (hit.collider.transform.tag == "class")
+				{
+					Debug.DrawLine(Camera.main.transform.position, hit.point);
+					return hit.collider.gameObject;
+				}
+			}
+
+			return null;
 		}
 
 		void OnMouseUp()

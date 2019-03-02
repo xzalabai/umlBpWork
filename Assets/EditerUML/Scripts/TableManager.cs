@@ -106,7 +106,7 @@ public class TableManager : MonoBehaviour {
 		graph.transform.position = new Vector3(table.transform.position.x, table.transform.position.y, table.transform.position.z-10f);
 		graph.transform.parent = table.transform;
 
-		
+		graph.GetComponent<Graph>().UpdateGraph();
 		allTables.Add(table);
 
 		//todo: lastTableId if work good
