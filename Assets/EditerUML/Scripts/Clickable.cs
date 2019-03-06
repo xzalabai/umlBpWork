@@ -26,6 +26,8 @@ namespace CodeStory
 		static GameObject a = null;
 		static GameObject b = null;
 
+		public Camera camera;
+
 		static Graph parent1 = null;
 		static Graph parent2 = null;
 
@@ -285,15 +287,14 @@ namespace CodeStory
 		{
 			Vector3 v3T = Input.mousePosition;
 			v3T = Camera.main.ScreenToWorldPoint(v3T);
-			Vector3 forward = transform.TransformDirection(Vector3.back) * 100;
-			//Debug.DrawRay(v3T, forward, Color.green, 100022.0f);
+			Ray rayy = Camera.main.ScreenPointToRay(Input.mousePosition);
+			//Debug.DrawRay(rayy.origin, rayy.direction * 1000, Color.green, 800000.0f);
 			RaycastHit[] hits;
-			hits = Physics.RaycastAll(v3T, forward, 1000.0F).OrderBy(h => h.distance).ToArray(); ;
+			hits = Physics.RaycastAll(rayy, 8000.0F).OrderBy(h => h.distance).ToArray(); ;
 			for (int i = 0; i < hits.Length; i++)
 			{
 				RaycastHit hit = hits[i];
 				Renderer rend = hit.transform.GetComponent<Renderer>();
-
 				if (hit.collider.transform.tag == "table")
 				{
 					Debug.Log(hit.collider.transform.name);
@@ -310,10 +311,10 @@ namespace CodeStory
 		{
 			Vector3 v3T = Input.mousePosition;
 			v3T = Camera.main.ScreenToWorldPoint(v3T);
-			Vector3 forward = transform.TransformDirection(Vector3.forward) * 1000;
-			Debug.Log("seeeem");
+			Ray rayy = Camera.main.ScreenPointToRay(Input.mousePosition);
+			//Debug.DrawRay(rayy.origin, rayy.direction * 1000, Color.green, 800000.0f);
 			RaycastHit[] hits; 
-			hits = Physics.RaycastAll(v3T, forward, 8000.0F).OrderBy(h => h.distance).ToArray(); ;
+			hits = Physics.RaycastAll(rayy, 8000.0F).OrderBy(h => h.distance).ToArray(); ;
 			for (int i = 0; i < hits.Length; i++)
 			{
 				RaycastHit hit = hits[i];
