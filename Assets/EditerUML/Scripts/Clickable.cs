@@ -220,9 +220,7 @@ namespace CodeStory
 				{
 					Graph g = GetComponentInParent<Graph>();
 					GameObject c = g.GetComponent<Graph>().AddEdge(a, b);
-					Vector3 p = c.transform.position;
-					p.z -= 2.0f;
-					c.transform.position = p;
+					//c.transform.localPosition = new Vector3(c.transform.localPosition.x, c.transform.localPosition.y, c.transform.localPosition.z + 13.0f);
 					g.GetComponent<Graph>().UpdateGraph();
 					c.tag = "line";
 				}

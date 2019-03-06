@@ -54,8 +54,8 @@ public class TableManager : MonoBehaviour {
 		table2.transform.localScale = new Vector3(400, 300, 1);
 		table2.transform.position = new Vector3(0, 0, 430);
 
-		table1.GetComponent<MeshRenderer>().material.renderQueue = 2999;
-		table2.GetComponent<MeshRenderer>().material.renderQueue = 2999;
+		///table1.GetComponent<MeshRenderer>().material.renderQueue = 2999;
+		//table2.GetComponent<MeshRenderer>().material.renderQueue = 2999;
 		table1.name = "1";
 		table2.name = "2";
 
