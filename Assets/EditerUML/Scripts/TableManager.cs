@@ -45,6 +45,12 @@ public class TableManager : MonoBehaviour {
 		var go1 = GameObject.Instantiate(prefab);
 		var go2 = GameObject.Instantiate(prefab);
 
+		var gr1 = Instantiate(graphPrefab);
+		var gr2 = Instantiate(graphPrefab);
+
+		Graph graph1 = gr1.GetComponent<Graph>();
+		Graph graph2 = gr2.GetComponent<Graph>();
+
 		table1 = go1.GetComponent<Table>();
 		table2 = go2.GetComponent<Table>();
 
@@ -61,7 +67,12 @@ public class TableManager : MonoBehaviour {
 
 		table1.tag = "table";
 		table2.tag = "table";
- 
+
+		graph1.transform.parent = table1.transform;
+		graph1.transform.position = new Vector3(table1.transform.position.x, table1.transform.position.y, table1.transform.position.z - 10f);
+
+		graph2.transform.parent = table2.transform;
+		graph2.transform.position = new Vector3(table2.transform.position.x, table2.transform.position.y, table2.transform.position.z - 10f);
 
 		lastTableId = 2;
 		lastTablePosition = 430;
@@ -106,7 +117,7 @@ public class TableManager : MonoBehaviour {
 		graph.transform.position = new Vector3(table.transform.position.x, table.transform.position.y, table.transform.position.z-10f);
 		graph.transform.parent = table.transform;
 
-		graph.GetComponent<Graph>().UpdateGraph();
+		//graph.GetComponent<Graph>().UpdateGraph();
 		allTables.Add(table);
 
 		//todo: lastTableId if work good

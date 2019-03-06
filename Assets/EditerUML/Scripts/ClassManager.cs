@@ -28,7 +28,7 @@ public class ClassManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		var go = GameObject.Instantiate(prefab);
+		/*var go = GameObject.Instantiate(prefab);
 		var go2 = GameObject.Instantiate(prefab);
 		graph1 = go.GetComponent<Graph>();
 		graph2 = go2.GetComponent<Graph>();
@@ -45,7 +45,7 @@ public class ClassManager : MonoBehaviour {
 		graph2.transform.parent = table2.transform;
 		graph2.transform.position = new Vector3(table2.transform.position.x, table2.transform.position.y, table2.transform.position.z - 10f);
 		//GameObject a = createObject(50,50, graph1);
-		//GameObject b = createObject(120, 120, graph1);
+		//GameObject b = createObject(120, 120, graph1);*/
 	}
 	
 	// Update is called once per frame
