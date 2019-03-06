@@ -675,6 +675,7 @@ MonoBehaviour:
     m_TypeName: CodeStory.GameObjectEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
   textManagerScript: {fileID: 0}
+  camera: {fileID: 940635685}
   testCube: {fileID: 1034658729248092, guid: 31f58d7737e2b144698559368b26032e, type: 2}
 --- !u!4 &444596477
 Transform:
@@ -2389,8 +2390,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 1889724182012266, guid: a7fcacb0848a8ac4898c34e492bf8dc8, type: 2}
-  table1: {fileID: 1165539923641948, guid: 7cc37bfa743da57479b2b09f688bd0b0, type: 2}
-  table2: {fileID: 1165539923641948, guid: 7cc37bfa743da57479b2b09f688bd0b0, type: 2}
+  table1: {fileID: 1900982832712884, guid: 7cc37bfa743da57479b2b09f688bd0b0, type: 2}
+  table2: {fileID: 1900982832712884, guid: 7cc37bfa743da57479b2b09f688bd0b0, type: 2}
   graph1: {fileID: 0}
   graph2: {fileID: 0}
   maxAngle: 70
@@ -3275,7 +3276,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 940635685}
-  prefab: {fileID: 1165539923641948, guid: 7cc37bfa743da57479b2b09f688bd0b0, type: 2}
+  prefab: {fileID: 1900982832712884, guid: 7cc37bfa743da57479b2b09f688bd0b0, type: 2}
   graphPrefab: {fileID: 1889724182012266, guid: a7fcacb0848a8ac4898c34e492bf8dc8,
     type: 2}
   classManager: {fileID: 1705697991}
