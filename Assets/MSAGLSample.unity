@@ -3281,6 +3281,7 @@ MonoBehaviour:
     type: 2}
   classManager: {fileID: 1705697991}
   edgesManager: {fileID: 1073743148}
+  copiedClass: {fileID: 0}
   tableNumber: {fileID: 17336495}
   table1: {fileID: 0}
   allTables: []

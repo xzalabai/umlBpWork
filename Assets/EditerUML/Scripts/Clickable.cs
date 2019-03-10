@@ -12,7 +12,7 @@ namespace CodeStory
 	public class Clickable : MonoBehaviour
 	{
 		static bool firstN = false;
-		public float dragSpeed = 0.3f;
+		public float dragSpeed = 117.9f;
 		Vector3 lastMousePos;
 
 		Vector3 dist;
@@ -46,6 +46,9 @@ namespace CodeStory
 
 		private float time;
 
+		private bool dragON = false;
+		//private GameObject dragNDropClass = null;
+
 		private bool doubleClick = false;
 
 		void Start()
@@ -54,9 +57,7 @@ namespace CodeStory
 		}
 
 		void Update()
-		{
-
-
+		{ 
 
 			if (writingInClass && Input.GetKey(KeyCode.Return))
 			{
@@ -100,6 +101,10 @@ namespace CodeStory
 			{
 				DeleteObject();
 			}
+			else if (Input.GetKey(KeyCode.F))
+			{
+				DragNDropClass();
+			}
 			time = Time.time;
 		}
 
@@ -127,17 +132,13 @@ namespace CodeStory
 		bool writingInClass = false;
 		TextMeshProUGUI whereToWrite;
 		public void ChangeText()
-		{ 
+		{
 
 			Vector3 v3T = Input.mousePosition;
-			Vector3 GOPos = gameObject.transform.position;
-			v3T.z = GOPos.z;
 			v3T = Camera.main.ScreenToWorldPoint(v3T);
-			Vector3 forward = transform.TransformDirection(Vector3.forward) * 10;
-			Debug.DrawRay(v3T, forward, Color.green, 1000.0f);
-
+			Ray rayy = Camera.main.ScreenPointToRay(Input.mousePosition);
 			RaycastHit[] hits;
-			hits = Physics.RaycastAll(v3T, forward, 500.0F);
+			hits = Physics.RaycastAll(rayy, 8000.0F).OrderBy(h => h.distance).ToArray(); ;
 			for (int i = 0; i < hits.Length; i++)
 			{
 				RaycastHit hit = hits[i];
@@ -224,6 +225,7 @@ namespace CodeStory
 					GameObject c = g.GetComponent<Graph>().AddEdge(a, b);
 					//c.transform.localPosition = new Vector3(c.transform.localPosition.x, c.transform.localPosition.y, c.transform.localPosition.z + 13.0f);
 					g.GetComponent<Graph>().UpdateGraph();
+
 					c.tag = "line";
 				}
 				else if (a != null && b != null)
@@ -330,6 +332,67 @@ namespace CodeStory
 			return null;
 		}
 
+		GameObject RayForDragNDropClass()
+		{
+			Vector3 v3T = Input.mousePosition;
+			v3T = Camera.main.ScreenToWorldPoint(v3T);
+			Ray rayy = Camera.main.ScreenPointToRay(Input.mousePosition);
+			RaycastHit[] hits;
+			hits = Physics.RaycastAll(rayy, 8000.0F).OrderBy(h => h.distance).ToArray(); ;
+			for (int i = 0; i < hits.Length; i++)
+			{
+				RaycastHit hit = hits[i];
+				Renderer rend = hit.transform.GetComponent<Renderer>();
+				if (hit.collider.transform.tag == "class")
+				{
+					return hit.collider.transform.gameObject;
+				}
+			}
+			return null;
+		}
+
+		IEnumerator WaitForInstruction()
+		{
+			while (true)
+			{
+				if (Input.GetMouseButtonDown(0))
+				{
+					Debug.Log("CAKAM ---");
+					RaycastHit hit = new RaycastHit();
+					if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit))
+					{
+						if (hit.transform.gameObject.tag == "table")
+						{
+							Debug.Log("IDEEEE");
+							yield break;
+						}
+					}
+				}
+				yield return null;
+			}
+			//not here yield return null;
+		}
+
+		GameObject RayForDragNDropTable()
+		{
+			Vector3 v3T = Input.mousePosition;
+			v3T = Camera.main.ScreenToWorldPoint(v3T);
+			Ray rayy = Camera.main.ScreenPointToRay(Input.mousePosition);
+			//Debug.DrawRay(rayy.origin, rayy.direction * 1000, Color.green, 800000.0f);
+			RaycastHit[] hits;
+			hits = Physics.RaycastAll(rayy, 8000.0F).OrderBy(h => h.distance).ToArray(); ;
+			for (int i = 0; i < hits.Length; i++)
+			{
+				RaycastHit hit = hits[i];
+				Renderer rend = hit.transform.GetComponent<Renderer>();
+				if (hit.collider.transform.tag == "table")
+				{
+					return hit.collider.transform.gameObject;
+				}
+			}
+			return null;
+		}
+
 		void OnMouseUp()
 		{
 			doubleClick = false;
@@ -349,6 +412,63 @@ namespace CodeStory
 				lastMousePos = Input.mousePosition;
 
 			}
+		}
+
+		GameObject dragNDropClass = null;
+		GameObject dragNDropTable = null;
+		void DragNDropClass()
+		{
+
+
+			if (gameObject.transform.tag == "class")
+			{
+				dragNDropClass = RayForDragNDropClass();
+				GameObject classManager = GameObject.Find("TableManager");
+				classManager.GetComponent<TableManager>().copiedClass = dragNDropClass;
+			}
+			else if (gameObject.transform.tag == "table")
+			{
+				dragNDropTable = RayForDragNDropTable();
+				GameObject classManager = GameObject.Find("TableManager");
+				dragNDropClass = classManager.GetComponent<TableManager>().copiedClass;
+
+				if (!dragNDropClass) return;
+			}
+
+			if (dragNDropClass && dragNDropTable)
+			{
+				//copy.transform.parent = dragNDropTable.transform;
+
+				Graph graph = GetComponentInChildren<Graph>();
+				GameObject newClass = graph.GetComponent<Graph>().AddNode();
+
+
+				//get strings from old table
+				Transform background = dragNDropClass.gameObject.transform.GetChild(0);
+				String header = background.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text;
+				String method = background.gameObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text;
+				String attributes = background.gameObject.transform.GetChild(4).GetComponent<TextMeshProUGUI>().text;
+
+
+				//set that old strings to new class
+				Transform newBackground = newClass.gameObject.transform.GetChild(0);
+				newBackground.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = header;
+				newBackground.gameObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = method;
+				newBackground.gameObject.transform.GetChild(4).GetComponent<TextMeshProUGUI>().text = attributes;
+
+				newClass.transform.position = dragNDropTable.transform.position;
+				newClass.transform.localPosition = new Vector3(newClass.transform.localPosition.x, newClass.transform.localPosition.y, newClass.transform.localPosition.z - 1.05f);
+
+				newClass.tag = "class";
+				newClass.name = "Class " + idOfClass++.ToString();
+				//idOfClass++;
+				Debug.Log("Position of new class " + newClass.transform.position);
+				Debug.Log("Position of table " + graph.transform.position);
+				Debug.Log("Position of go " + gameObject.transform.position);
+				graph.GetComponent<Graph>().UpdateGraph();
+			}
+			else Debug.Log("NEJDEEE");
+			
 		}
 	}
 }

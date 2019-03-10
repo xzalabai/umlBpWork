@@ -22,8 +22,8 @@ GameObject:
   - component: {fileID: 33169926814788466}
   - component: {fileID: 23070828617033684}
   - component: {fileID: 114050952037019378}
-  - component: {fileID: 114400867630923130}
   - component: {fileID: 64264102797363242}
+  - component: {fileID: 114326731616567932}
   m_Layer: 0
   m_Name: Table
   m_TagString: Untagged
@@ -124,7 +124,7 @@ MonoBehaviour:
   cam: {fileID: 0}
   targetPosition: {x: 0, y: 0, z: 0}
   direction: 
---- !u!114 &114400867630923130
+--- !u!114 &114326731616567932
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -135,7 +135,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5473b54df1a751048bcad81026e33c82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dragSpeed: 0.3
+  dragSpeed: 117.9
   triggerAction:
     m_PersistentCalls:
       m_Calls: []
@@ -143,4 +143,4 @@ MonoBehaviour:
       PublicKeyToken=null
   textManagerScript: {fileID: 0}
   camera: {fileID: 0}
-  testCube: {fileID: 1034658729248092, guid: 31f58d7737e2b144698559368b26032e, type: 2}
+  testCube: {fileID: 0}

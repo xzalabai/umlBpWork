@@ -27,6 +27,7 @@ public class TableManager : MonoBehaviour {
 	public GameObject graphPrefab;
 	public GameObject classManager;
 	public GameObject edgesManager;
+	public GameObject copiedClass = null;
 	public UnityEngine.UI.Slider tableNumber;
 	//Resources.Load("TableMaterialOpaque.mat", typeof(Material)) as Material;
 	public Table table1;
