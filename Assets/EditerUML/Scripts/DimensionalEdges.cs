@@ -55,7 +55,7 @@ public class DimensionalEdges : MonoBehaviour {
 	}
 
 
-	public void createDimensionalAssociation(GameObject from, GameObject to)
+	public LineRenderer createDimensionalAssociation(GameObject from, GameObject to)
 	{
 		var go = Instantiate(linePrefab);
 		LineRenderer l = go.GetComponent<LineRenderer>();
@@ -80,8 +80,8 @@ public class DimensionalEdges : MonoBehaviour {
 		//add connection to the list of 3d connections
 		allDimensionalAs.Add(newAssociation);
 
-		
 
+		return l;
 		//return obj;
 	}
 }

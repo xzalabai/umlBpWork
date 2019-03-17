@@ -11,12 +11,9 @@ using UnityEngine.UI;
 /*
  
 	 
-	TODO: FIX SPAWN CLASSOV DALEKO OD TABULE
 	TODO: CREATE ALGORHITM ON METRICS
-	TODO: MOVE GRAPH INSTANTIATE FROM CLASSMANAGER TO TABLEMANAGER
 	TODO: FIX DIMENSIONAL EDGE
-	TODO: URGENT !!! - SPAWN AND SHOW CLASSES ON TABLE SHOWCASE !!!!!!
-
+	TODO: FIX UNDO MOVE ON DIMENSIONAL EDGE
 
 */
 
@@ -35,7 +32,6 @@ public class TableManager : MonoBehaviour {
 	public Table table2;
 	public static int lastTableId;
 	public static float lastTablePosition;
-
 	public Material opaque;
 	public Material transparent;
 	int distanceBetweenTables = 310;
@@ -280,6 +276,16 @@ public class TableManager : MonoBehaviour {
 	}
 
 	bool moveToUserON = false;
+
+	public void ExecuteUndoMove()
+	{
+		int searchedTable = (int)tableNumber.value;
+		GameObject obj = GameObject.Find(searchedTable.ToString());
+		Table t = obj.GetComponent<Table>();
+		BackManager backManagerOfTable = t.GetComponentInChildren<BackManager>();
+		backManagerOfTable.GetComponent<BackManager>().ExecuteUndoMove();
+
+	}
 	public void TableToUser()
 	{
 		Table t;

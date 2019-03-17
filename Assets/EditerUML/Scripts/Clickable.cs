@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -12,7 +13,7 @@ namespace CodeStory
 	public class Clickable : MonoBehaviour
 	{
 		static bool firstN = false;
-		public float dragSpeed = 117.9f;
+		public float dragSpeed = 0.09f;
 		Vector3 lastMousePos;
 
 		Vector3 dist;
@@ -20,21 +21,14 @@ namespace CodeStory
 		float posY;
 
 		public GameObjectEvent triggerAction;
-
 		public GameObject textManagerScript;
-
 		static GameObject a = null;
 		static GameObject b = null;
-
 		public Camera camera;
-
 		static Graph parent1 = null;
 		static Graph parent2 = null;
-
 		public GameObject testCube;
-
 		static GameObject firstNode = null, secondNode = null;
-
 		private Vector3 screenPoint;
 		private Vector3 offset;
 
@@ -42,11 +36,15 @@ namespace CodeStory
 
 		private float delta;
 
-		private float idOfClass = 1;
+		public int idOfClass = 1;
 
 		private float time;
 
 		private bool dragON = false;
+		bool writingInClass = false;
+		TextMeshProUGUI whereToWrite;
+		GameObject dragNDropClass = null;
+		GameObject dragNDropTable = null;
 		//private GameObject dragNDropClass = null;
 
 		private bool doubleClick = false;
@@ -71,13 +69,6 @@ namespace CodeStory
 				textManagerScript.GetComponent<TextManager>().HideOrUnihdeInputField(true);
 				writingInClass = false;
 			}
-			
-			/*Vector3 v3T = Input.mousePosition;
-			Vector3 GOPos = gameObject.transform.position;
-			v3T.z = GOPos.z;
-			v3T = Camera.main.ScreenToWorldPoint(v3T);
-			Vector3 forward = transform.TransformDirection(Vector3.forward) * 10;
-			Debug.DrawRay(v3T, forward, Color.green, 1000.0f);*/
 		}
 
 		private void OnMouseDown()
@@ -113,11 +104,21 @@ namespace CodeStory
 		{
 			triggerAction.Invoke(gameObject);
 			Graph g = GetComponentInParent<Graph>();
-			Debug.Log("xxx " + gameObject.tag);
 			if (gameObject.tag == "class"){
+
+				Transform background = gameObject.transform.GetChild(0);
+				String header = background.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text;
+				String method = background.gameObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text;
+				String attributes = background.gameObject.transform.GetChild(4).GetComponent<TextMeshProUGUI>().text;
+				string writtenText = header + "#" + method + "#" + attributes;
+				List<int> associatedWith = new List<int>();
+				associatedWith = getAllAssociations(gameObject);
+
+				WriteAction("deleteClass", g.GetComponentInParent<Table>(), null,Int32.Parse(gameObject.name), null,0, null, gameObject.transform.position, writtenText, associatedWith);
 				g.GetComponent<Graph>().RemoveNode(gameObject);
 			}
 			else if (gameObject.tag == "line"){
+				//WriteAction("deleteAssociation",g.GetComponentInParent<Table>(),)
 				g.GetComponent<Graph>().RemoveEdge(gameObject);
 			}
 			else if (gameObject.tag == "dimensionalLine"){
@@ -129,11 +130,14 @@ namespace CodeStory
 		}
 
 
-		bool writingInClass = false;
-		TextMeshProUGUI whereToWrite;
+	
 		public void ChangeText()
 		{
-
+			bool classWasHitted = false;
+			Table table = null;
+			GameObject classGO = null;
+			string changedCell = null;
+			string oldtext = null;
 			Vector3 v3T = Input.mousePosition;
 			v3T = Camera.main.ScreenToWorldPoint(v3T);
 			Ray rayy = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -144,51 +148,33 @@ namespace CodeStory
 				RaycastHit hit = hits[i];
 				Renderer rend = hit.transform.GetComponent<Renderer>();
 				//TODO: set size for clicks (when too close to table, error)
-				Debug.Log(hit.collider.transform.name);
 				if (hit.collider.transform.name == "Methods" || hit.collider.transform.name == "Header" || hit.collider.transform.name == "Attributes")
 				{
+					classWasHitted = true;
+					changedCell = hit.collider.transform.name;
 					textManagerScript.GetComponent<TextManager>().HideOrUnihdeInputField(false);
 					TextMeshProUGUI t = hit.collider.transform.GetComponent<TextMeshProUGUI>();
+					oldtext = t.text;
 					textManagerScript.GetComponent<TextManager>().SetInputFieldText(t.text);
 					writingInClass = true;
 					whereToWrite = t;
 				}
 
-			}
-
-			//yield return waitForKeyPress(KeyCode.Space);
-
-			/*RaycastHit hit;
-			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-			//Debug.DrawRay(Input.mousePosition, ray.direction, Color.green);
-			if (Physics.Raycast(ray, out hit))
-			{
-				Transform objectHit = hit.transform;
-
-				Debug.Log(hit.collider.name);
-			}*/
-
-
-			//triggerAction.Invoke(gameObject);
-			//TextMeshProUGUI textM = gameObject.GetComponent<TextMeshProUGUI>();
-		
-		}
-
-		private IEnumerator waitForKeyPress(KeyCode key)
-		{
-			bool done = false;
-			while (!done) // essentially a "while true", but with a bool to break out naturally
-			{
-				if (Input.GetKeyDown(key))
+				if (!table && hit.collider.transform.tag == "table")
 				{
-					done = true; // breaks the loop
+					
+					table = hit.collider.transform.gameObject.GetComponent<Table>();
 				}
-				yield return null; // wait until next frame, then continue execution from here (loop continues)
-			}
+					
 
-			// now this function returns
+				if (!classGO && hit.collider.transform.tag == "class")
+					classGO = hit.collider.transform.gameObject;
+			}
+			if (classWasHitted)
+				WriteAction("change" + changedCell, table, classGO,Int32.Parse(classGO.name), null,0, null, Vector3.zero, oldtext, null);
 		}
 
+		
 		//create New Association
 		void OnRealMouseDown()
 		{
@@ -201,14 +187,12 @@ namespace CodeStory
 				b = taggedObj;
 
 			//if we didnt tagged class
-			if (isClass(a) == false || isClass(b) == false)
-			{
+			if (isClass(a) == false || isClass(b) == false){
 				a = null; b = null; parent1 = null; parent2 = null;
 			}
 
 			//if the 2 tagged objects are same, we are not assigning them a association
-			if (a == b)
-			{
+			if (a == b){
 				a = null; b = null; parent1 = null; parent2 = null;
 			}
 
@@ -223,7 +207,8 @@ namespace CodeStory
 				{
 					Graph g = GetComponentInParent<Graph>();
 					GameObject c = g.GetComponent<Graph>().AddEdge(a, b);
-					//c.transform.localPosition = new Vector3(c.transform.localPosition.x, c.transform.localPosition.y, c.transform.localPosition.z + 13.0f);
+					LineRenderer x = c.GetComponent<LineRenderer>(); ;
+					WriteAction("addAssociation",g.GetComponentInParent<Table>(),a, Int32.Parse(a.name),b,Int32.Parse(b.name),x,new Vector3(0,0,0),null, null);
 					g.GetComponent<Graph>().UpdateGraph();
 
 					c.tag = "line";
@@ -232,6 +217,7 @@ namespace CodeStory
 				{
 					GameObject obj = GameObject.Find("DimensionalEdgesManager");
 					obj.GetComponent<DimensionalEdges>().createDimensionalAssociation(a, b);
+					//WriteAction("addAssociation", g.GetComponentInParent<Table>(), a, b, c, new Vector3(0, 0, 0), null);
 
 				}
 				else
@@ -259,6 +245,7 @@ namespace CodeStory
 				return true;
 			return false;
 		}
+
 		//create New Class
 		private void OnDoubleClick()
 		{
@@ -274,14 +261,13 @@ namespace CodeStory
 
 			//classPosition.z = graph.transform.position.z;
 			a.transform.position = classPosition;
-			a.transform.localPosition = new Vector3(a.transform.localPosition.x, a.transform.localPosition.y, a.transform.localPosition.z - 0.05f);
+			a.transform.localPosition = new Vector3(a.transform.localPosition.x, a.transform.position.y, a.transform.localPosition.z - 0.05f);
 
 			a.tag = "class";
-			a.name = "Class " + idOfClass++.ToString();
-			//idOfClass++;
-			Debug.Log("Position of new class " +a.transform.position);
-			Debug.Log("Position of table " +graph.transform.position);
-			Debug.Log("Position of go " + gameObject.transform.position);
+			a.name = idOfClass.ToString();
+
+			WriteAction("addClass", graph.GetComponentInParent<Table>(), a,idOfClass, null,0, null, new Vector3(0,0,0), null, null);
+			idOfClass++;
 			graph.GetComponent<Graph>().UpdateGraph();
 		}
 
@@ -304,7 +290,6 @@ namespace CodeStory
 					return hit.point;
 				}
 			}
-
 			return new Vector3(0, 0, 0);
 		}
 
@@ -351,27 +336,6 @@ namespace CodeStory
 			return null;
 		}
 
-		IEnumerator WaitForInstruction()
-		{
-			while (true)
-			{
-				if (Input.GetMouseButtonDown(0))
-				{
-					Debug.Log("CAKAM ---");
-					RaycastHit hit = new RaycastHit();
-					if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit))
-					{
-						if (hit.transform.gameObject.tag == "table")
-						{
-							Debug.Log("IDEEEE");
-							yield break;
-						}
-					}
-				}
-				yield return null;
-			}
-			//not here yield return null;
-		}
 
 		GameObject RayForDragNDropTable()
 		{
@@ -400,9 +364,8 @@ namespace CodeStory
 
 		void OnMouseDrag()
 		{
-			//TODO: is local Position good ?
 			triggerAction.Invoke(gameObject);
-			if (gameObject.tag == "table" || gameObject.tag == "class")
+			if (/*gameObject.tag == "table" || */gameObject.tag == "class")
 			{
 				Vector3 delta = Input.mousePosition - lastMousePos;
 				Vector3 pos = transform.localPosition;
@@ -414,12 +377,8 @@ namespace CodeStory
 			}
 		}
 
-		GameObject dragNDropClass = null;
-		GameObject dragNDropTable = null;
 		void DragNDropClass()
 		{
-
-
 			if (gameObject.transform.tag == "class")
 			{
 				dragNDropClass = RayForDragNDropClass();
@@ -460,7 +419,7 @@ namespace CodeStory
 				newClass.transform.localPosition = new Vector3(newClass.transform.localPosition.x, newClass.transform.localPosition.y, newClass.transform.localPosition.z - 1.05f);
 
 				newClass.tag = "class";
-				newClass.name = "Class " + idOfClass++.ToString();
+				newClass.name = idOfClass++.ToString();
 				//idOfClass++;
 				Debug.Log("Position of new class " + newClass.transform.position);
 				Debug.Log("Position of table " + graph.transform.position);
@@ -470,5 +429,66 @@ namespace CodeStory
 			else Debug.Log("NEJDEEE");
 			
 		}
+
+
+		public void WriteAction(string type, Table table, GameObject class1, int class1ID, GameObject class2, int class2ID, LineRenderer line, Vector3 previousPos, string writtenText, List<int> allAssociations)
+		{
+			BackManager backManager = table.GetComponentInChildren<BackManager>();
+
+			switch (type)
+			{
+				case "addClass":
+					backManager.GetComponent<BackManager>().AddClassAction(class1);
+					break;
+				case "deleteClass":
+					Debug.Log(allAssociations.Count + "xxxxxxxxx");
+					backManager.GetComponent<BackManager>().DeleteClassAction(table, class1, class1ID, previousPos, writtenText, allAssociations);
+					break;
+				case "addAssociation":
+					backManager.GetComponent<BackManager>().AddAssociationAction(table, line, class1, class1ID, class2, class2ID);
+					break;
+				case "deleteAssociation":
+					Debug.Log("UNDO ON delete is not working now");
+					backManager.GetComponent<BackManager>().DeleteAssociationAction(line, class1,0, class2, 0);
+					break;
+				case "changeHeader":
+					backManager.GetComponent<BackManager>().ChangeHeaderAction(table, class1, class1ID, writtenText);
+					break;
+				case "changeAttributes":
+					backManager.GetComponent<BackManager>().ChangeAttributesAction(table, class1, class1ID, writtenText);
+					break;
+				case "changeMethods":
+					backManager.GetComponent<BackManager>().ChangeMethodsAction(table, class1, class1ID, writtenText);
+					break;
+				default:
+					Debug.Log("WRONG BACK OPERATION");
+					break;
+			}
+			
+		}
+
+		public List<int> getAllAssociations(GameObject o)
+		{
+			int myID = Int32.Parse(o.transform.name);
+			List<int> allAssociations = new List<int>();
+			int name;
+
+			var graphNode = o.GetComponent<UNode>().GraphNode;
+			foreach (var edge in graphNode.Edges)
+			{
+				if (edge.Source.UserData.Equals(o) == false)
+				{
+					name = Int32.Parse(edge.Source.UserData.ToString().Split(' ')[0]);
+					allAssociations.Add(name);
+				}
+				if (edge.Target.UserData.Equals(o) == false)
+				{
+					name = Int32.Parse(edge.Target.UserData.ToString().Split(' ')[0]);
+					allAssociations.Add(name);
+				}
+			}
+			return allAssociations;
+		}
+
 	}
 }
