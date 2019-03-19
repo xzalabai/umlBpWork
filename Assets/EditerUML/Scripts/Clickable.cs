@@ -259,9 +259,11 @@ namespace CodeStory
 			Graph graph = GetComponentInChildren<Graph>();
 			GameObject a = graph.GetComponent<Graph>().AddNode();
 
-			//classPosition.z = graph.transform.position.z;
-			a.transform.position = classPosition;
-			a.transform.localPosition = new Vector3(a.transform.localPosition.x, a.transform.position.y, a.transform.localPosition.z - 0.05f);
+            //classPosition.z = graph.transform.position.z;
+            float originalZPosizition = a.transform.localPosition.z;
+
+            a.transform.position = classPosition;
+			a.transform.localPosition = new Vector3(a.transform.localPosition.x, a.transform.localPosition.y, originalZPosizition);
 
 			a.tag = "class";
 			a.name = idOfClass.ToString();

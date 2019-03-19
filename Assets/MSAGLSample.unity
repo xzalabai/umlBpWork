@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -190,9 +190,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 269447937}
   m_Direction: 0
   m_MinValue: 1
-  m_MaxValue: 2
+  m_MaxValue: 0
   m_WholeNumbers: 1
-  m_Value: 1
+  m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -3484,5 +3484,8 @@ MonoBehaviour:
   table1: {fileID: 0}
   allTables: []
   table2: {fileID: 0}
+  lastTableId: 0
+  lastTablePosition: 0
   opaque: {fileID: 0}
   transparent: {fileID: 0}
+  distanceBetweenTables: 310

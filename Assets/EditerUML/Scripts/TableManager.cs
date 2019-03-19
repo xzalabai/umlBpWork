@@ -30,52 +30,18 @@ public class TableManager : MonoBehaviour {
 	public Table table1;
 	public List<Table> allTables = new List<Table>();
 	public Table table2;
-	public static int lastTableId;
-	public static float lastTablePosition;
+	public int lastTableId = 0;
+	public float lastTablePosition = 0;
 	public Material opaque;
 	public Material transparent;
-	int distanceBetweenTables = 310;
+	public int distanceBetweenTables = 310;
 
 	// Use this for initialization
 	void Start () {
 
-		var go1 = GameObject.Instantiate(prefab);
-		var go2 = GameObject.Instantiate(prefab);
+        CreateNewTable();
+        CreateNewTable();
 
-		var gr1 = Instantiate(graphPrefab);
-		var gr2 = Instantiate(graphPrefab);
-
-		Graph graph1 = gr1.GetComponent<Graph>();
-		Graph graph2 = gr2.GetComponent<Graph>();
-
-		table1 = go1.GetComponent<Table>();
-		table2 = go2.GetComponent<Table>();
-
-		table1.transform.localScale = new Vector3(400, 300, 1);
-		table1.transform.position = new Vector3(0, 0, 120);
-
-		table2.transform.localScale = new Vector3(400, 300, 1);
-		table2.transform.position = new Vector3(0, 0, 430);
-
-		///table1.GetComponent<MeshRenderer>().material.renderQueue = 2999;
-		//table2.GetComponent<MeshRenderer>().material.renderQueue = 2999;
-		table1.name = "1";
-		table2.name = "2";
-
-		table1.tag = "table";
-		table2.tag = "table";
-
-		graph1.transform.parent = table1.transform;
-		graph1.transform.position = new Vector3(table1.transform.position.x, table1.transform.position.y, table1.transform.position.z - 10f);
-
-		graph2.transform.parent = table2.transform;
-		graph2.transform.position = new Vector3(table2.transform.position.x, table2.transform.position.y, table2.transform.position.z - 10f);
-
-		lastTableId = 2;
-		lastTablePosition = 430;
-
-		allTables.Add(table1);
-		allTables.Add(table2);
 	}
 	
 	// Update is called once per frame
@@ -94,32 +60,38 @@ public class TableManager : MonoBehaviour {
 
 	public void CreateNewTable()
 	{
-		//creating new tablw with graph
-		var go = Instantiate(prefab);
-		Table table = go.GetComponent<Table>();
-		table.transform.localScale = new Vector3(400,300,1);
-		table.transform.position = new Vector3(0, 0, lastTablePosition + distanceBetweenTables);
-		table.GetComponent<MeshRenderer>().material.renderQueue = 2999;
+        //creating new tablw with graph
+        var go = GameObject.Instantiate(prefab);
+        InitNewTable(go);
+    }
 
-		//rise the max value in slider (one new table)
-		tableNumber.maxValue++;
+    public void InitNewTable(GameObject instantiatedTable)
+    {
+        var go = instantiatedTable;
+        Table table = go.GetComponent<Table>();
+        table.transform.position = new Vector3(table.transform.position.x, table.transform.position.y, table.transform.position.z+lastTablePosition + distanceBetweenTables);
+        table.GetComponent<MeshRenderer>().material.renderQueue = 2999;
 
-		lastTableId++;
-		table.tag = "table";
-		table.name = tableNumber.maxValue.ToString();
-		table.uniqueId = System.Int32.Parse(tableNumber.maxValue.ToString());
-		lastTablePosition = lastTablePosition + distanceBetweenTables;
+        //rise the max value in slider (one new table)
+        tableNumber.maxValue++;
 
-		var graph = GameObject.Instantiate(graphPrefab);
-		graph.transform.position = new Vector3(table.transform.position.x, table.transform.position.y, table.transform.position.z-10f);
-		graph.transform.parent = table.transform;
+        lastTableId++;
+        table.tag = "table";
+        table.name = tableNumber.maxValue.ToString();
+        table.uniqueId = System.Int32.Parse(tableNumber.maxValue.ToString());
+        lastTablePosition = lastTablePosition + distanceBetweenTables;
 
-		//graph.GetComponent<Graph>().UpdateGraph();
-		allTables.Add(table);
+///var graph = GameObject.Instantiate(graphPrefab);
+     //   graph.transform.position = new Vector3(table.transform.position.x, table.transform.position.y, table.transform.position.z - 10f);
+      //  graph.transform.parent = table.transform;
 
-		//todo: lastTableId if work good
-	}
-	public void changeTransparencyTable1(float n)
+        //graph.GetComponent<Graph>().UpdateGraph();
+        allTables.Add(table);
+
+        //todo: lastTableId if work good
+    }
+
+    public void changeTransparencyTable1(float n)
 	{
 		GameObject obj = GameObject.Find("1");
 		Color c = obj.GetComponent<MeshRenderer>().material.color; //TODO: change material in runtime
