@@ -192,7 +192,7 @@ MonoBehaviour:
   m_MinValue: 1
   m_MaxValue: 0
   m_WholeNumbers: 1
-  m_Value: 1
+  m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -2587,8 +2587,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 1889724182012266, guid: a7fcacb0848a8ac4898c34e492bf8dc8, type: 2}
-  table1: {fileID: 1358785355291566, guid: 7cc37bfa743da57479b2b09f688bd0b0, type: 2}
-  table2: {fileID: 1358785355291566, guid: 7cc37bfa743da57479b2b09f688bd0b0, type: 2}
+  table1: {fileID: 1880382986308128, guid: 8be863897c2440c41b41b875dbfc4894, type: 2}
+  table2: {fileID: 1880382986308128, guid: 8be863897c2440c41b41b875dbfc4894, type: 2}
   graph1: {fileID: 0}
   graph2: {fileID: 0}
   maxAngle: 70
@@ -3474,7 +3474,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 940635685}
-  prefab: {fileID: 1358785355291566, guid: 7cc37bfa743da57479b2b09f688bd0b0, type: 2}
+  prefab: {fileID: 1880382986308128, guid: 8be863897c2440c41b41b875dbfc4894, type: 2}
   graphPrefab: {fileID: 1889724182012266, guid: a7fcacb0848a8ac4898c34e492bf8dc8,
     type: 2}
   classManager: {fileID: 1705697991}
@@ -3489,3 +3489,4 @@ MonoBehaviour:
   opaque: {fileID: 0}
   transparent: {fileID: 0}
   distanceBetweenTables: 310
+  spawnOnStart: 1
