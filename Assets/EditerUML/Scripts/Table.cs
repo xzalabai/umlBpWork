@@ -38,7 +38,6 @@ public class Table : MonoBehaviour {
 	void Update () {
 
 
-		
 
 		if (moveTable)
 		{

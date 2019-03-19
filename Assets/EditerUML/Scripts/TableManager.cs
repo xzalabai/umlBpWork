@@ -35,12 +35,15 @@ public class TableManager : MonoBehaviour {
 	public Material opaque;
 	public Material transparent;
 	public int distanceBetweenTables = 310;
+    public bool spawnOnStart = true;
 
 	// Use this for initialization
 	void Start () {
-
-        CreateNewTable();
-        CreateNewTable();
+        if (spawnOnStart)
+        {
+            CreateNewTable();
+            CreateNewTable();
+        }
 
 	}
 	
@@ -69,8 +72,11 @@ public class TableManager : MonoBehaviour {
     {
         var go = instantiatedTable;
         Table table = go.GetComponent<Table>();
-        table.transform.position = new Vector3(table.transform.position.x, table.transform.position.y, table.transform.position.z+lastTablePosition + distanceBetweenTables);
-        table.GetComponent<MeshRenderer>().material.renderQueue = 2999;
+        table.transform.position = new Vector3(table.transform.position.x, table.transform.position.y, table.transform.position.z + lastTablePosition);
+        if (table.GetComponent<MeshRenderer>() != null)
+        {
+            table.GetComponent<MeshRenderer>().material.renderQueue = 2999;
+        }
 
         //rise the max value in slider (one new table)
         tableNumber.maxValue++;
@@ -102,42 +108,48 @@ public class TableManager : MonoBehaviour {
 	public void DeleteTables()
 	{
 		int searchedTable = (int)tableNumber.value;
-		float lastPosition = 0;
 
 		//we delete it from scene
 		Debug.Log(searchedTable);
 		GameObject obj = GameObject.Find(searchedTable.ToString());
-		int deletedTableId = System.Int32.Parse(obj.name);
 		Destroy(obj);
+        AfterDeleteTables(searchedTable);
+    }
 
-		//we delete selected table from list of all tables
-		allTables = allTables.Where(x => x.name != searchedTable.ToString()).ToList();
-		edgesManager.GetComponent<DimensionalEdges>().DeleteNestedAssociations(searchedTable);
+    public void AfterDeleteTables(int searchedTable)
+    {
+        float lastPosition = 0;
 
-		//we will move all tables behind to 1 position in front, and every table gets new .name = id - 1;
-		foreach (Table t in allTables)
-		{
-			int tableId = System.Int32.Parse(t.name);
-			if (tableId > deletedTableId)
-			{
-				Vector3 pos = t.transform.position;
-				pos.z -= distanceBetweenTables;
-				t.transform.position = pos;
-				int newId = System.Int32.Parse(t.name);
-				newId--;
-				t.name = newId.ToString();
-				lastPosition = t.transform.position.z;
-			}
-		}
-		
-		tableNumber.maxValue--;
-		lastTablePosition = lastPosition;
-	}
+        //we delete selected table from list of all tables
+        allTables = allTables.Where(x => x.name != searchedTable.ToString()).ToList();
+        edgesManager.GetComponent<DimensionalEdges>().DeleteNestedAssociations(searchedTable);
+
+        //we will move all tables behind to 1 position in front, and every table gets new .name = id - 1;
+        foreach (Table t in allTables)
+        {
+            int tableId = System.Int32.Parse(t.name);
+            if (tableId > searchedTable)
+            {
+                Vector3 pos = t.transform.position;
+                pos.z -= distanceBetweenTables;
+                t.transform.position = pos;
+                int newId = System.Int32.Parse(t.name);
+                newId--;
+                t.name = newId.ToString();
+                lastPosition = t.transform.position.z;
+            }
+        }
+
+        tableNumber.maxValue--;
+        lastTablePosition = lastPosition;
+    }
+
+
 
 	//returns radius
 	public float Circuit()
 	{
-		float sizeOfTable = 400;
+		float sizeOfTable = prefab.transform.localScale.x;
 		float PI = 3.141f;
 		float numOfTables = allTables.Count;
 
