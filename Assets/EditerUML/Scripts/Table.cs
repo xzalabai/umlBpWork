@@ -43,6 +43,7 @@ public class Table : MonoBehaviour {
 		{
 			transform.position = Vector3.MoveTowards(transform.position, targetPosition, 1000 * Time.deltaTime);
 			transform.LookAt(whereToLook);
+			transform.LookAt(2 * transform.position - whereToLook);
 
 			//this case is when we want table in front of CAMERA (we will stop when table is 20f in front of camera)
 			if (distanceIsON) {
@@ -57,13 +58,10 @@ public class Table : MonoBehaviour {
 		if (moveTable && transform.position == targetPosition)
 		{
 			moveTable = false;
-			transform.LookAt(whereToLook);
+			Debug.Log("sssss");
+			transform.LookAt(2 * transform.position - whereToLook);
 			whereToLook = Vector3.forward; //default look
 		}
-
-		//if (flyToFront)
-			//FlyToFront(targetPositionToFront);
-
 
 	}
 
