@@ -20,7 +20,7 @@ using UnityEngine.UI;
 public class TableManager : MonoBehaviour {
 	private Vector3 infinity = new Vector3(0, 0, -500000);
 	public Camera cam;
-	public GameObject prefab;
+	public GameObject tablePrefab;
 	public GameObject graphPrefab;
 	public GameObject classManager;
 	public GameObject edgesManager;
@@ -64,7 +64,7 @@ public class TableManager : MonoBehaviour {
 	public void CreateNewTable()
 	{
         //creating new tablw with graph
-        var go = GameObject.Instantiate(prefab);
+        var go = GameObject.Instantiate(tablePrefab);
         InitNewTable(go);
     }
 
@@ -149,7 +149,7 @@ public class TableManager : MonoBehaviour {
 	//returns radius
 	public float Circuit()
 	{
-		float sizeOfTable = prefab.transform.localScale.x;
+		float sizeOfTable = tablePrefab.transform.localScale.x;
 		float PI = 3.141f;
 		float numOfTables = allTables.Count;
 
@@ -230,6 +230,7 @@ public class TableManager : MonoBehaviour {
 	//let table go to front (by slider)
 	bool isInFront = false;
 	Vector3 defaultPosition;
+	int searchedTable;
 	int frontTableId;
 	Vector3 frontPosition = new Vector3(10f, 10f, 10f);
 
@@ -237,7 +238,7 @@ public class TableManager : MonoBehaviour {
 	{
 		Table t;
 		if (!isInFront) {
-			int searchedTable = (int)tableNumber.value;
+			 searchedTable = (int)tableNumber.value;
 			GameObject obj = GameObject.Find(searchedTable.ToString());
 			t = obj.GetComponent<Table>();
 			t.defaultPosition = t.transform.position;
@@ -249,13 +250,14 @@ public class TableManager : MonoBehaviour {
 
 		else
 		{
-			int searchedTable = (int)tableNumber.value;
+			//int searchedTable = (int)tableNumber.value;
 			GameObject obj = GameObject.Find(searchedTable.ToString());
 			t = obj.GetComponent<Table>();
 			t.targetPosition = t.defaultPosition;
 			t.whereToLook = infinity;
 			t.moveTable = true;
 			isInFront = false;
+			searchedTable = 0;
 		}
 	}
 
@@ -270,12 +272,14 @@ public class TableManager : MonoBehaviour {
 		backManagerOfTable.GetComponent<BackManager>().ExecuteUndoMove();
 
 	}
+
+	//int searchedTable;
 	public void TableToUser()
 	{
 		Table t;
 		if (!isInFront)
 		{
-			int searchedTable = (int)tableNumber.value;
+			searchedTable = (int)tableNumber.value;
 			GameObject obj = GameObject.Find(searchedTable.ToString());
 			t = obj.GetComponent<Table>();
 			t.defaultPosition = t.transform.position;
@@ -288,7 +292,7 @@ public class TableManager : MonoBehaviour {
 
 		else
 		{
-			int searchedTable = (int)tableNumber.value;
+			//int searchedTable = (int)tableNumber.value;
 			GameObject obj = GameObject.Find(searchedTable.ToString());
 			t = obj.GetComponent<Table>();
 			t.targetPosition = t.defaultPosition;
@@ -296,6 +300,7 @@ public class TableManager : MonoBehaviour {
 			t.moveTable = true;
 			isInFront = false;
 			t.distanceIsON = false;
+			searchedTable = 0;
 		}
 	}
 
