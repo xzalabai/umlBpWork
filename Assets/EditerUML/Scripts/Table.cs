@@ -21,8 +21,8 @@ public class Table : MonoBehaviour {
 	public int uniqueId;
 	public GameObject cylinder;
 	public Camera cam;
-	
 
+	public float speedOfMoving = 1000;
 	public Vector3 targetPosition;
 
 	public string direction = "";
@@ -34,7 +34,7 @@ public class Table : MonoBehaviour {
 
 		if (moveTable)
 		{
-			transform.position = Vector3.MoveTowards(transform.position, targetPosition, 1000 * Time.deltaTime);
+			transform.position = Vector3.MoveTowards(transform.position, targetPosition, speedOfMoving * Time.deltaTime);
 			transform.LookAt(whereToLook);
 			transform.LookAt(2 * transform.position - whereToLook);
 
@@ -51,7 +51,6 @@ public class Table : MonoBehaviour {
 		if (moveTable && transform.position == targetPosition)
 		{
 			moveTable = false;
-			Debug.Log("sssss");
 			transform.LookAt(2 * transform.position - whereToLook);
 			whereToLook = Vector3.forward; //default look
 		}
