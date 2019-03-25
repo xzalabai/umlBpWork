@@ -40,8 +40,8 @@ public class ClassManager : MonoBehaviour {
 
 			foreach (GameObject c in classes)
 			{
-				string[] nameOfClass = c.name.Split(' ');
-				float sizeOfCylinder = Int32.Parse(nameOfClass[1]);
+				//string[] nameOfClass = c.name.Split(' ');
+				float sizeOfCylinder = Int32.Parse(c.name);
 				
 				var cy = GameObject.Instantiate(cylinder);
 				cy.GetComponent<Renderer>().material.SetColor("_Color", UnityEngine.Random.ColorHSV());

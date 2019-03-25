@@ -63,7 +63,7 @@ public class TableManager : MonoBehaviour {
     {
         var go = instantiatedTable;
         Table table = go.GetComponent<Table>();
-        table.transform.position = new Vector3(table.transform.position.x, table.transform.position.y, table.transform.position.z + lastTablePosition);
+        table.transform.position = new Vector3(table.transform.position.x, table.transform.position.y, table.transform.position.z + lastTablePosition + distanceBetweenTables);
         if (table.GetComponent<MeshRenderer>() != null)
         {
             table.GetComponent<MeshRenderer>().material.renderQueue = 2999;
@@ -95,7 +95,6 @@ public class TableManager : MonoBehaviour {
 		int searchedTable = (int)tableNumber.value;
 
 		//we delete it from scene
-		Debug.Log(searchedTable);
 		GameObject obj = GameObject.Find(searchedTable.ToString());
 		Destroy(obj);
         AfterDeleteTables(searchedTable);
@@ -103,17 +102,36 @@ public class TableManager : MonoBehaviour {
 
     public void AfterDeleteTables(int searchedTable)
     {
-        float lastPosition = 0;
+		float lastPosition = 0;
 
-        //we delete selected table from list of all tables
+
+		//if we are going to delete last table
+		if (searchedTable == allTables.Count)
+		{
+			Table t = allTables[allTables.Count - 2];
+			tableNumber.maxValue--;
+			lastTablePosition = t.transform.position.z;
+			allTables = allTables.Where(x => x.name != searchedTable.ToString()).ToList();
+			return;
+		}      
+
+		//we delete selected table from list of all tables
         allTables = allTables.Where(x => x.name != searchedTable.ToString()).ToList();
-        edgesManager.GetComponent<DimensionalEdges>().DeleteNestedAssociations(searchedTable);
-
+		if (edgesManager)
+			edgesManager.GetComponent<DimensionalEdges>().DeleteNestedAssociations(searchedTable);
+		
         //we will move all tables behind to 1 position in front, and every table gets new .name = id - 1;
         foreach (Table t in allTables)
         {
-            int tableId = System.Int32.Parse(t.name);
-            if (tableId > searchedTable)
+		
+			int tableId = System.Int32.Parse(t.name);
+
+			//we delete table from list 
+			if (tableId == searchedTable)
+				allTables.Remove(t);
+
+			//we iterate through all tables, to move their positions
+			if (tableId > searchedTable)
             {
                 Vector3 pos = t.transform.position;
                 pos.z -= distanceBetweenTables;
@@ -123,18 +141,25 @@ public class TableManager : MonoBehaviour {
                 t.name = newId.ToString();
                 lastPosition = t.transform.position.z;
             }
-        }
 
+			
+        }
         tableNumber.maxValue--;
         lastTablePosition = lastPosition;
     }
 
-
+	public float BiggestScaleOfChildren(GameObject o)
+	{
+		if (o.transform.localScale.x > o.GetComponentInChildren<Transform>().localScale.x)
+			return o.transform.localScale.x;
+		return o.GetComponentInChildren<Transform>().localScale.x;
+	
+	}
 
 	//returns radius
 	public float Circuit()
 	{
-		float sizeOfTable = tablePrefab.transform.localScale.x;
+		float sizeOfTable = BiggestScaleOfChildren(tablePrefab);
 		float PI = 3.141f;
 		float numOfTables = allTables.Count;
 
