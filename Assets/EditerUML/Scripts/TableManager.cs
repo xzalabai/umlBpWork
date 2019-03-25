@@ -52,15 +52,6 @@ public class TableManager : MonoBehaviour {
 
 	}
 
-	// show metrics for all tables 
-	/*public void ShowMetrics()
-	{
-		foreach (Table t in allTables)
-		{
-			t.GetComponent<Table>().CreateMetric();
-		}
-	}*/
-
 	public void CreateNewTable()
 	{
         //creating new tablw with graph
@@ -87,14 +78,8 @@ public class TableManager : MonoBehaviour {
         table.uniqueId = System.Int32.Parse(tableNumber.maxValue.ToString());
         lastTablePosition = lastTablePosition + distanceBetweenTables;
 
-///var graph = GameObject.Instantiate(graphPrefab);
-     //   graph.transform.position = new Vector3(table.transform.position.x, table.transform.position.y, table.transform.position.z - 10f);
-      //  graph.transform.parent = table.transform;
-
-        //graph.GetComponent<Graph>().UpdateGraph();
         allTables.Add(table);
 
-        //todo: lastTableId if work good
     }
 
     public void changeTransparencyTable1(float n)
@@ -165,7 +150,13 @@ public class TableManager : MonoBehaviour {
 	float startAng = -90;
 	public void TestTableShowcase()
 	{
-		startAng = -90;
+		Debug.Log(allTables.Count);
+		if (allTables.Count == 2)
+			startAng = -45;
+		else if (allTables.Count == 3)
+			startAng = -60;
+		else
+			startAng = -90;
 		//go to preview positions
 		if (!tableShowcaseON) {
 
@@ -301,127 +292,6 @@ public class TableManager : MonoBehaviour {
 			isInFront = false;
 			t.distanceIsON = false;
 			searchedTable = 0;
-		}
-	}
-
-
-	public void WorkingMode()
-	{
-
-		int tablesCount = allTables.Count;
-		if (tablesCount % 2 == 0)
-		{
-			OrderOddTables();
-		}
-		else
-		{
-			OrderEvenTables();
-		}
-
-	}
-
-	public void OrderEvenTables()
-	{
-		int i = 0;                                                 //table n.	
-		int iteration = 1;                                         //row n.	
-		string direction = "";
-
-		Table firstTable = allTables[0];                           //we grab first table	
-		Vector3 targetPosition = firstTable.transform.position;    //default target position
-
-		float lastZPosition = firstTable.transform.position.z;     //last row position	
-		float lastRightPosition = firstTable.transform.position.x; //last position of Right table
-		float lastLeftPosition = firstTable.transform.position.x;  //last position of Left table
-		float XScale = firstTable.transform.localScale.x;          //difference between tables	
-
-		foreach (Table t in allTables)
-		{
-			if (i == 0)
-			{
-				i++; continue;  //we are skipping first item
-			}
-			if (i % 2 == 1)
-			{
-				//if table goes right
-				targetPosition.x = lastRightPosition + XScale;
-				targetPosition.z = lastZPosition - 150;             //new row (on EVEN number ,,i" because then we approach new row)	
-				lastZPosition = targetPosition.z;
-				lastRightPosition = targetPosition.x;
-				iteration++;
-				direction = "right";
-			}
-			else
-			{
-				//if table goes left
-				targetPosition.x = lastLeftPosition - XScale;
-				targetPosition.z = lastZPosition;
-				lastLeftPosition = targetPosition.x;
-				direction = "left";
-			}
-
-			t.GetComponent<Table>().targetPosition = targetPosition;
-			t.GetComponent<Table>().moveTable = true;
-			t.GetComponent<Table>().direction = direction;
-
-			i++;
-		}
-	}
-
-	public void OrderOddTables()
-	{
-		int i = 0;                                                 //table n.	
-		int iteration = 1;                                         //row n.	
-		string direction = "";
-
-		Table firstTable = allTables[0];                           //we grab first table	
-		Vector3 targetPosition = firstTable.transform.position;    //default target position
-
-		float lastZPosition = firstTable.transform.position.z;     //last row position	
-		float lastRightPosition = firstTable.transform.position.x; //last position of Right table
-		float lastLeftPosition = firstTable.transform.position.x;  //last position of Left table
-		float XScale = firstTable.transform.localScale.x;          //difference between tables	
-
-		foreach (Table t in allTables)
-		{
-			if (i == 0)
-			{
-				targetPosition.x = lastRightPosition + (XScale / 2 + 5);
-				direction = "none";
-			}
-			else if (i == 1)
-			{
-				targetPosition.x = lastLeftPosition - (XScale / 2 + 5);
-				targetPosition.z = lastZPosition;
-				direction = "none";
-				iteration++;
-			}
-			else if (i % 2 == 0)
-			{
-				//if table goes right
-				if (i == 2) XScale = XScale * 1.35f;
-				targetPosition.x = lastRightPosition + XScale;
-				targetPosition.z = lastZPosition - 200;             //new row (on EVEN number ,,i" because then we approach new row)	
-				lastZPosition = targetPosition.z;
-				lastRightPosition = targetPosition.x;
-				iteration++;
-				direction = "right";
-			}
-			else
-			{
-				//if table goes left
-				targetPosition.x = lastLeftPosition - XScale;
-				targetPosition.z = lastZPosition;
-				lastLeftPosition = targetPosition.x;
-				direction = "left";
-			}
-
-			Debug.Log(targetPosition.z);
-
-			t.GetComponent<Table>().targetPosition = targetPosition;
-			t.GetComponent<Table>().moveTable = true;
-			t.GetComponent<Table>().direction = direction;
-
-			i++;
 		}
 	}
 }

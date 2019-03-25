@@ -105,8 +105,6 @@ public void createDimensionalAssociation(GameObject from, GameObject to)
 	public void createAssociation(GameObject from, GameObject to, Graph gr) 
 	{
 		gr.AddEdge(from, to);
-
-		//return gr.AddEdge(from, to);
 	}
 	
 	//this creates a new Class
@@ -114,29 +112,11 @@ public void createDimensionalAssociation(GameObject from, GameObject to)
 	{
 		var node = g.AddNode();
 		GameObject n=(GameObject)node;
-		//set a position of diagram
-
 		n.transform.position = new Vector3(pointX, pointY, g.transform.position.z-2.0f);
 		n.tag = "class";
 
 		allClasses.Add(n);
 
 		return n;
-	}
-
-	public Vector3 getRightTopCorner(List<Vector3> points)
-	{
-
-		float maxDistance = 0;
-		Vector3 rightTopCorner = Vector3.zero;
-		foreach (Vector3 point in points)
-		{
-			if (Vector3.Distance(Vector3.zero, new Vector3(point.x + 1000, point.y + 1000, point.z)) > maxDistance)
-			{
-				rightTopCorner = point;
-				maxDistance = Vector3.Distance(Vector3.zero, new Vector3(point.x + 1000, point.y + 1000, point.z));
-			}
-		}
-		return rightTopCorner;
 	}
 }
