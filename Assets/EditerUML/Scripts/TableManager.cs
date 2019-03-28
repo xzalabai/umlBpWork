@@ -199,7 +199,7 @@ public class TableManager : MonoBehaviour {
 
 			float radius = Circuit();
 			float rightAngle = 180 / allTables.Count;
-			Vector3 center = Camera.main.transform.position;
+			Vector3 center = new Vector3(0,0,0);
 			Debug.Log(center);
 			foreach (Table t in allTables)
 			{
