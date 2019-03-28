@@ -200,6 +200,7 @@ public class TableManager : MonoBehaviour {
 			float radius = Circuit();
 			float rightAngle = 180 / allTables.Count;
 			Vector3 center = Camera.main.transform.position;
+			Debug.Log(center);
 			foreach (Table t in allTables)
 			{
 				t.defaultPosition = t.transform.position;
@@ -207,7 +208,7 @@ public class TableManager : MonoBehaviour {
 				Vector3 pos = GetToCircle(center, radius, rightAngle);
 
 				//t.transform.LookAt(Camera.main.transform.position);
-				t.whereToLook = Camera.main.transform.position;
+				t.whereToLook = center;
 				t.GetComponent<Table>().targetPosition = pos;
 				t.GetComponent<Table>().moveTable = true;
 			}
