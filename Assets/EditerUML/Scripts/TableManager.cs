@@ -63,7 +63,9 @@ public class TableManager : MonoBehaviour {
     {
         var go = instantiatedTable;
         Table table = go.GetComponent<Table>();
+		Debug.Log(table.transform.position.z + " " + lastTablePosition + "  " + distanceBetweenTables);
         table.transform.position = new Vector3(table.transform.position.x, table.transform.position.y, table.transform.position.z + lastTablePosition + distanceBetweenTables);
+		Debug.Log(table.transform.position);
         if (table.GetComponent<MeshRenderer>() != null)
         {
             table.GetComponent<MeshRenderer>().material.renderQueue = 2999;
@@ -82,14 +84,6 @@ public class TableManager : MonoBehaviour {
 
     }
 
-    public void changeTransparencyTable1(float n)
-	{
-		GameObject obj = GameObject.Find("1");
-		Color c = obj.GetComponent<MeshRenderer>().material.color; //TODO: change material in runtime
-		c.a = n;
-		obj.GetComponent<MeshRenderer>().material.color = c;
-	}
-
 	public void DeleteTables()
 	{
 		int searchedTable = (int)tableNumber.value;
@@ -102,9 +96,19 @@ public class TableManager : MonoBehaviour {
 
     public void AfterDeleteTables(int searchedTable)
     {
+		if (allTables.Count == 0)
+			return;
 		float lastPosition = 0;
 
-
+		if (searchedTable == 1 && allTables.Count == 1)
+		{
+			Table t = allTables[0];
+			tableNumber.maxValue--;
+			//lastTablePosition = t.transform.position.z;
+			lastTablePosition = 0;
+			allTables = allTables.Where(x => x.name != searchedTable.ToString()).ToList();
+			return;
+		}
 		//if we are going to delete last table
 		if (searchedTable == allTables.Count)
 		{
@@ -150,11 +154,19 @@ public class TableManager : MonoBehaviour {
 
 	public float BiggestScaleOfChildren(GameObject o)
 	{
-		if (o.transform.localScale.x > o.GetComponentInChildren<Transform>().localScale.x)
-			return o.transform.localScale.x;
-		return o.GetComponentInChildren<Transform>().localScale.x;
-	
+		var asf = o.transform.GetComponentsInChildren<Transform>();
+		var max = 0f;
+		foreach (var t in asf)
+		{
+			if (t.localScale.x > max)
+			{
+				max = t.localScale.x;
+			}
+		}
+		return max;
+
 	}
+
 
 	//returns radius
 	public float Circuit()
@@ -191,6 +203,7 @@ public class TableManager : MonoBehaviour {
 			foreach (Table t in allTables)
 			{
 				t.defaultPosition = t.transform.position;
+				center.y = t.transform.position.y;
 				Vector3 pos = GetToCircle(center, radius, rightAngle);
 
 				//t.transform.LookAt(Camera.main.transform.position);

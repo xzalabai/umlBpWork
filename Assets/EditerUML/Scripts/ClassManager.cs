@@ -35,24 +35,34 @@ public class ClassManager : MonoBehaviour {
 	{
 		if (isHidden)
 		{
+			
 			GameObject[] classes;
 			classes = GameObject.FindGameObjectsWithTag("class");
 
 			foreach (GameObject c in classes)
 			{
-				//string[] nameOfClass = c.name.Split(' ');
-				float sizeOfCylinder = Int32.Parse(c.name);
+				//float sizeOfTable = GameObject.Find("TableManager").GetComponent<TableManager>().BiggestScaleOfChildren(c.GetComponentInParent<Table>().gameObject);
+				Vector3 scaleOfClass = c.transform.localScale;
+				float sizeOfCylinder = new System.Random().Next(1, 5);
 				
+				//scaleOfClass = new Vector3(scaleOfClass.x / 4, scaleOfClass.x / 4, sizeOfCylinder / 4);
+				sizeOfCylinder = sizeOfCylinder / 4;
+
 				var cy = GameObject.Instantiate(cylinder);
-				cy.GetComponent<Renderer>().material.SetColor("_Color", UnityEngine.Random.ColorHSV());
-			
-				cy.transform.position = new Vector3(c.transform.position.x + 40f, c.transform.position.y + 20f, c.transform.position.z - sizeOfCylinder);
-
-				Vector3 scale = cy.transform.localScale;
-				scale.y = sizeOfCylinder;
-				cy.transform.localScale = scale;
-
 				cy.transform.parent = c.transform;
+
+				cy.GetComponent<Renderer>().material.SetColor("_Color", UnityEngine.Random.ColorHSV());
+
+				Debug.Log(c.transform.localScale);
+				cy.transform.position = new Vector3(c.transform.position.x + c.transform.localScale.x,
+													c.transform.position.y + c.transform.localScale.y,
+													c.transform.position.z );
+
+				//Vector3 scale = cy.transform.localScale;
+				//scale.y = sizeOfCylinder * cy.transform.localScale.y;
+				//cy.transform.localScale = scale;
+
+				
 				allcylinders.Add(cy);
 			}
 			isHidden = false;
@@ -66,10 +76,9 @@ public class ClassManager : MonoBehaviour {
 			}
 			isHidden = true;
 		}
-		
 	}
-	//update dimensional associations
-	public void updateDimensionalAssociation(LineRenderer line, GameObject from, GameObject to)
+		//update dimensional associations
+		public void updateDimensionalAssociation(LineRenderer line, GameObject from, GameObject to)
 	{
 		var points = new Vector3[2];
 		points[0] = from.transform.position;
