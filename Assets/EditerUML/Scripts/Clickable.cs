@@ -207,7 +207,7 @@ namespace CodeStory
 				{
 					Graph g = GetComponentInParent<Graph>();
 					GameObject c = g.GetComponent<Graph>().AddEdge(a, b);
-					LineRenderer x = c.GetComponent<LineRenderer>(); ;
+					LineRenderer x = c.GetComponent<LineRenderer>();
 					WriteAction("addAssociation",g.GetComponentInParent<Table>(),a, Int32.Parse(a.name),b,Int32.Parse(b.name),x,new Vector3(0,0,0),null, null);
 					g.GetComponent<Graph>().UpdateGraph();
 
@@ -440,7 +440,7 @@ namespace CodeStory
 			switch (type)
 			{
 				case "addClass":
-					backManager.GetComponent<BackManager>().AddClassAction(class1);
+					backManager.GetComponent<BackManager>().AddClassAction(class1, table);
 					break;
 				case "deleteClass":
 					Debug.Log(allAssociations.Count + "xxxxxxxxx");
@@ -474,7 +474,6 @@ namespace CodeStory
 			int myID = Int32.Parse(o.transform.name);
 			List<int> allAssociations = new List<int>();
 			int name;
-
 			var graphNode = o.GetComponent<UNode>().GraphNode;
 			foreach (var edge in graphNode.Edges)
 			{

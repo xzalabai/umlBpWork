@@ -41,29 +41,27 @@ public class ClassManager : MonoBehaviour {
 
 			foreach (GameObject c in classes)
 			{
-				//float sizeOfTable = GameObject.Find("TableManager").GetComponent<TableManager>().BiggestScaleOfChildren(c.GetComponentInParent<Table>().gameObject);
-				Vector3 scaleOfClass = c.transform.localScale;
-				float sizeOfCylinder = new System.Random().Next(1, 5);
+				float sizeOfTable = GameObject.Find("TableManager").GetComponent<TableManager>().BiggestScaleOfChildren(c.GetComponentInParent<Table>().gameObject);				
+				float widthOfCylinder = new System.Random().Next(1, 40);
+
+				//create cylinder, set size
+				var cylinder = GameObject.Instantiate(this.cylinder);
+				cylinder.transform.parent = c.transform;
+				cylinder.GetComponent<Renderer>().material.SetColor("_Color", UnityEngine.Random.ColorHSV());
+
+				cylinder.transform.localScale = new Vector3(sizeOfTable / 10, widthOfCylinder, sizeOfTable / 10);
+				cylinder.transform.position = c.transform.position;
+				cylinder.transform.position = new Vector3(cylinder.transform.position.x + sizeOfTable / 10,
+					cylinder.transform.position.y + sizeOfTable / 10,
+					cylinder.transform.position.z);
 				
-				//scaleOfClass = new Vector3(scaleOfClass.x / 4, scaleOfClass.x / 4, sizeOfCylinder / 4);
-				sizeOfCylinder = sizeOfCylinder / 4;
-
-				var cy = GameObject.Instantiate(cylinder);
-				cy.transform.parent = c.transform;
-
-				cy.GetComponent<Renderer>().material.SetColor("_Color", UnityEngine.Random.ColorHSV());
-
-				Debug.Log(c.transform.localScale);
-				cy.transform.position = new Vector3(c.transform.position.x + c.transform.localScale.x,
-													c.transform.position.y + c.transform.localScale.y,
-													c.transform.position.z );
 
 				//Vector3 scale = cy.transform.localScale;
 				//scale.y = sizeOfCylinder * cy.transform.localScale.y;
 				//cy.transform.localScale = scale;
 
-				
-				allcylinders.Add(cy);
+
+				allcylinders.Add(cylinder);
 			}
 			isHidden = false;
 		}

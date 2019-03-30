@@ -1,4 +1,6 @@
 ﻿using CodeStory;
+using Microsoft.Msagl.Core.Layout;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -26,7 +28,7 @@ public class BackManager : MonoBehaviour {
 
 		/*
 		 
-		 
+		TODO -> MAKE getLine - create unique ID to LINE!!! 
 		TODO -> delete association UNDO BUTTON NOT CREATED !!!!!!!!!!!!
 		TODO -> add table id to actions (then getClass use in Execute)
 		 
@@ -113,13 +115,21 @@ public class BackManager : MonoBehaviour {
 		Graph g = class1.GetComponentInParent<Graph>(); //we get the graph in which is line
 
 		if (g == null) class2.GetComponentInParent<Graph>();
-		g.GetComponent<Graph>().RemoveEdge(undoMove.line.gameObject);
+
+		GameObject line = getLine(undoMove);
+
+		line.SetActive(false);
+		//g.GetComponent<Graph>().RemoveEdge(undoMove.line.gameObject);
 	}
 
 	void ExecuteDeleteAssociation()
 	{
-		Graph g = undoMove.class1.GetComponentInParent<Graph>();
-		g.GetComponent<Graph>().AddEdge(undoMove.class1, undoMove.class2);
+		GameObject from = getClass(undoMove);
+		GameObject to = getClass2(undoMove);
+
+		Graph g = from.GetComponentInParent<Graph>();
+		GameObject line = g.GetComponent<Graph>().AddEdge(undoMove.class1, undoMove.class2);
+		line.tag = "line";
 	}
 
 	void ExecuteChangeText(string type)
@@ -142,8 +152,10 @@ public class BackManager : MonoBehaviour {
 
 	void ExecuteAddClass() 
 	{
-		Graph g = undoMove.class1.GetComponentInParent<Graph>();
-		g.GetComponent<Graph>().RemoveNode(undoMove.class1);
+		GameObject classGO = getClass(undoMove);
+		Graph g =classGO.GetComponentInParent<Graph>();
+		classGO.SetActive(false);
+		//g.GetComponent<Graph>().RemoveNode(undoMove.class1);
 	}
 
 	void ExecuteDeleteClass()
@@ -161,7 +173,8 @@ public class BackManager : MonoBehaviour {
 		{
 			GameObject associatedClass = getClass(association, undoMove);
 			Graph g = newClass.GetComponentInParent<Graph>();
-			g.GetComponent<Graph>().AddEdge(associatedClass, newClass);
+			GameObject line = g.GetComponent<Graph>().AddEdge(associatedClass, newClass);
+			line.tag = "line";
 
 		}
 		string[] text = undoMove.class1WholeText.Split('#');
@@ -174,10 +187,12 @@ public class BackManager : MonoBehaviour {
 		
 	}
 
-	public void AddClassAction(GameObject classGO) {
+	public void AddClassAction(GameObject classGO, Table table) {
 		var action = new Action();
 		//Action action;
 		action.typeOfAction = "addClass";
+		action.class1Id = Int32.Parse(classGO.transform.name);
+		action.table = table;
 		action.class1 = classGO;
 		previousActions.Push(action);
 	}
@@ -254,6 +269,41 @@ public class BackManager : MonoBehaviour {
 		previousActions.Push(action);
 	}
 
+	GameObject getLine(Action act)
+	{
+		int from = act.class1Id;
+		int to = act.class2Id;
+
+		if (act.line)
+			return act.line.gameObject;
+
+		Graph g = act.table.GetComponentInChildren<Graph>();
+		
+		GameObject units = g.transform.Find("Units").gameObject;
+
+		var allEdges = FindEdgesInTable(units, "line");
+		foreach(UEdge edge in allEdges)
+		{
+			Edge e = edge.graphEdge;
+			if (e.Source.UserData.ToString().Split(' ')[0] == from.ToString() && e.Target.UserData.ToString().Split(' ')[0] == to.ToString())
+			{
+				
+				return edge.gameObject;
+			}
+
+			if (e.Target.UserData.ToString().Split(' ')[0] == from.ToString() && e.Source.UserData.ToString().Split(' ')[0] == to.ToString())
+			{
+				return edge.gameObject;
+			}
+
+		}
+
+		return null;
+	//	Edge e = act.line.GetComponent<Edge>();
+	//	Debug.Log(e.Source.UserData.ToString());
+	//	Debug.Log(e.Target.UserData.ToString());
+	}
+
 
 	GameObject getClass(Action act)
 	{
@@ -292,5 +342,30 @@ public class BackManager : MonoBehaviour {
 		Debug.Log("ERROR: Cannot find CLASS in table");
 		return null;
 
+	}
+
+	public List<UEdge> FindEdgesInTable(GameObject parent, string tag)
+	{
+		List<UEdge> edges = new List<UEdge>();
+
+		Transform t = parent.transform;
+		for (int i = 0; i < t.childCount; i++)
+		{
+			Debug.Log("deti");
+			if (t.GetChild(i).gameObject.tag == tag)
+			{
+
+				//Edge e = t.GetChild(i).gameObject.;
+				GameObject g = t.GetChild(i).gameObject;
+				//Edge e = g.GetComponent<Edge>();
+				//Debug.Log(e.Target.UserData.ToString());
+				edges.Add(t.GetChild(i).GetComponent<UEdge>());
+				//return t.GetChild(i).gameObject;
+			}
+		}
+		if (edges.Count == 0)
+			return null;
+
+		return edges;
 	}
 }
