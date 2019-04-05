@@ -55,16 +55,15 @@ namespace CodeStory
 		}
 
 		void Update()
-		{ 
+		{
 
 			if (writingInClass && Input.GetKey(KeyCode.Return))
 			{
 				string t = textManagerScript.GetComponent<TextManager>().GetInputFieldText();
-				string parsedText = t.Replace(";", "\n");
-				whereToWrite.text = (t.Replace("; ", "\n"));
-				//whereToWrite.text = t;
+				string parsedText = t.Replace(';', '\n');
+				Debug.Log(parsedText);
+				whereToWrite.text = parsedText;
 
-				//whereToWrite.text = "AHOj" + "\n" + "apfpp";
 				whereToWrite = null;
 				textManagerScript.GetComponent<TextManager>().HideOrUnihdeInputField(true);
 				writingInClass = false;
@@ -85,7 +84,7 @@ namespace CodeStory
 			{
 				OnRealMouseDown();
 			}
-			else if (Input.GetKey(KeyCode.R)) {
+			else if (Input.GetKey(KeyCode.LeftShift)) {
 				ChangeText();
 			}
 			else if (Input.GetKey(KeyCode.T))
@@ -154,15 +153,14 @@ namespace CodeStory
 					changedCell = hit.collider.transform.name;
 					textManagerScript.GetComponent<TextManager>().HideOrUnihdeInputField(false);
 					TextMeshProUGUI t = hit.collider.transform.GetComponent<TextMeshProUGUI>();
-					oldtext = t.text;
-					textManagerScript.GetComponent<TextManager>().SetInputFieldText(t.text);
+					oldtext = t.text;                                               
+					textManagerScript.GetComponent<TextManager>().SetInputFieldText(t.text.Replace('\n', ';'));
 					writingInClass = true;
 					whereToWrite = t;
 				}
 
 				if (!table && hit.collider.transform.tag == "table")
 				{
-					
 					table = hit.collider.transform.gameObject.GetComponent<Table>();
 				}
 					
@@ -170,10 +168,9 @@ namespace CodeStory
 				if (!classGO && hit.collider.transform.tag == "class")
 					classGO = hit.collider.transform.gameObject;
 			}
-			if (classWasHitted)
+			if (classWasHitted && classGO)
 				WriteAction("change" + changedCell, table, classGO,Int32.Parse(classGO.name), null,0, null, Vector3.zero, oldtext, null);
 		}
-
 		
 		//create New Association
 		void OnRealMouseDown()
@@ -422,13 +419,16 @@ namespace CodeStory
 
 				newClass.tag = "class";
 				newClass.name = idOfClass++.ToString();
+
+				WriteAction("addClass", graph.GetComponentInParent<Table>(), newClass, Int32.Parse(newClass.name), null, 0, null, new Vector3(0, 0, 0), null, null);
+
 				//idOfClass++;
 				Debug.Log("Position of new class " + newClass.transform.position);
 				Debug.Log("Position of table " + graph.transform.position);
 				Debug.Log("Position of go " + gameObject.transform.position);
 				graph.GetComponent<Graph>().UpdateGraph();
 			}
-			else Debug.Log("NEJDEEE");
+			else Debug.Log("NEJDE");
 			
 		}
 
