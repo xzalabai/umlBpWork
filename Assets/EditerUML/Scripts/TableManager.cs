@@ -57,6 +57,11 @@ public class TableManager : MonoBehaviour {
         //creating new tablw with graph
         var go = GameObject.Instantiate(tablePrefab);
         InitNewTable(go);
+		if (tableShowcaseON)
+		{
+			AddTableDuringShowcase();
+		}
+			
     }
 
     public void InitNewTable(GameObject instantiatedTable)
@@ -187,7 +192,7 @@ public class TableManager : MonoBehaviour {
 	float startAng = -90;
 	public void TestTableShowcase()
 	{
-		Debug.Log(allTables.Count);
+		Debug.Log("Number of tables: " +allTables.Count);
 		if (allTables.Count == 2)
 			startAng = -45;
 		else if (allTables.Count == 3)
@@ -195,6 +200,7 @@ public class TableManager : MonoBehaviour {
 		else
 			startAng = -90;
 		//go to preview positions
+		Debug.Log("----");
 		if (!tableShowcaseON) {
 
 			float radius = Circuit();
@@ -206,8 +212,7 @@ public class TableManager : MonoBehaviour {
 				t.defaultPosition = t.transform.position;
 				center.y = t.transform.position.y;
 				Vector3 pos = GetToCircle(center, radius, rightAngle);
-
-				//t.transform.LookAt(Camera.main.transform.position);
+				Debug.Log(center + " " + radius + " " + rightAngle + " " + pos);
 				t.whereToLook = center;
 				t.GetComponent<Table>().targetPosition = pos;
 				t.GetComponent<Table>().moveTable = true;
@@ -227,6 +232,42 @@ public class TableManager : MonoBehaviour {
 			tableShowcaseON = false;
 		}
 		
+	}
+
+	Vector3 AddTableDuringShowcase() {
+		tableShowcaseON = false;
+		if (allTables.Count == 2)
+			startAng = -45;
+		else if (allTables.Count == 3)
+			startAng = -60;
+		else
+			startAng = -90;
+		//go to preview positions
+		Debug.Log("----");
+		if (!tableShowcaseON)
+		{
+
+			float radius = Circuit();
+			float rightAngle = 180 / allTables.Count;
+			Vector3 center = new Vector3(0, 0, 0);
+			Debug.Log(center);
+			foreach (Table t in allTables)
+			{
+				//Debug.Log("name: " + t.name + " has default : " + t.defaultPosition);
+				if (t.defaultPosition == Vector3.zero)
+					t.defaultPosition = t.transform.position;
+				t.defaultPosition = t.defaultPosition;
+				center.y = t.transform.position.y;
+				Vector3 pos = GetToCircle(center, radius, rightAngle);
+				Debug.Log(center + " " + radius + " " + rightAngle + " " + pos);
+				t.whereToLook = center;
+				t.GetComponent<Table>().targetPosition = pos;
+				t.GetComponent<Table>().moveTable = true;
+			}
+			tableShowcaseON = true;
+		}
+
+		return Vector3.zero;
 	}
 
 	Vector3 GetToCircle(Vector3 center, float radius, float rightAngle)
