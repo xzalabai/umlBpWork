@@ -394,7 +394,7 @@ namespace CodeStory
 
 				Graph graph = GetComponentInChildren<Graph>();
 				GameObject newClass = graph.GetComponent<Graph>().AddNode();
-				classManager.GetComponent<TableManager>().CopyClass(dragNDropClass, dragNDropTable, idOfClass++, newClass);
+				classManager.GetComponent<TableManager>().CopyClass(dragNDropTable, idOfClass++, newClass);
 
 				WriteAction("addClass", graph.GetComponentInParent<Table>(), newClass, Int32.Parse(newClass.name), null, 0, null, new Vector3(0, 0, 0), null, null);
 

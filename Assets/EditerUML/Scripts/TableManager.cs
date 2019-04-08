@@ -370,13 +370,13 @@ public class TableManager : MonoBehaviour {
 		}
 	}
 
-	public void CopyClass(GameObject dragNDropClass, GameObject dragNDropTable, int idOfClass, GameObject newClass)
+	public void CopyClass(GameObject dragNDropTable, int idOfClass, GameObject newClass)
 	{
 		//Graph graph = GetComponentInChildren<Graph>();
 		//GameObject newClass = graph.GetComponent<Graph>().AddNode();
 
 		//get strings from old table
-		Transform background = dragNDropClass.gameObject.transform.GetChild(0);
+		Transform background = copiedClass.gameObject.transform.GetChild(0);
 		String header = background.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text;
 		String method = background.gameObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text;
 		String attributes = background.gameObject.transform.GetChild(4).GetComponent<TextMeshProUGUI>().text;
