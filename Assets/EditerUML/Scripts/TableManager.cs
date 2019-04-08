@@ -369,8 +369,12 @@ public class TableManager : MonoBehaviour {
 			searchedTable = 0;
 		}
 	}
-
 	public void CopyClass(GameObject dragNDropTable, int idOfClass, GameObject newClass)
+	{
+		CopyClass(copiedClass, dragNDropTable, idOfClass, newClass);
+	}
+
+	public void CopyClass( GameObject copiedClass, GameObject dragNDropTable, int idOfClass, GameObject newClass)
 	{
 		//Graph graph = GetComponentInChildren<Graph>();
 		//GameObject newClass = graph.GetComponent<Graph>().AddNode();
