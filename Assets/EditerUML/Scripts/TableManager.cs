@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Experimental.UIElements;
 using UnityEngine.UI;
@@ -59,7 +61,6 @@ public class TableManager : MonoBehaviour {
         InitNewTable(go);
 		if (tableShowcaseON)
 		{
-
 			AddTableDuringShowcase();
 		}
 			
@@ -367,6 +368,39 @@ public class TableManager : MonoBehaviour {
 			t.distanceIsON = false;
 			searchedTable = 0;
 		}
+	}
+
+	public void CopyClass(GameObject dragNDropClass, GameObject dragNDropTable, int idOfClass, GameObject newClass)
+	{
+		//Graph graph = GetComponentInChildren<Graph>();
+		//GameObject newClass = graph.GetComponent<Graph>().AddNode();
+
+		//get strings from old table
+		Transform background = dragNDropClass.gameObject.transform.GetChild(0);
+		String header = background.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text;
+		String method = background.gameObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text;
+		String attributes = background.gameObject.transform.GetChild(4).GetComponent<TextMeshProUGUI>().text;
+
+
+		//set that old strings to new class
+		Transform newBackground = newClass.gameObject.transform.GetChild(0);
+		newBackground.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = header;
+		newBackground.gameObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = method;
+		newBackground.gameObject.transform.GetChild(4).GetComponent<TextMeshProUGUI>().text = attributes;
+
+		newClass.transform.position = dragNDropTable.transform.position;
+		newClass.transform.localPosition = new Vector3(newClass.transform.localPosition.x, newClass.transform.localPosition.y, newClass.transform.localPosition.z - 1.05f);
+
+		newClass.tag = "class";
+		newClass.name = idOfClass.ToString();
+
+		//WriteAction("addClass", graph.GetComponentInParent<Table>(), newClass, Int32.Parse(newClass.name), null, 0, null, new Vector3(0, 0, 0), null, null);
+
+		//idOfClass++;
+		Debug.Log("Position of new class " + newClass.transform.position);
+		//Debug.Log("Position of table " + graph.transform.position);
+		Debug.Log("Position of go " + gameObject.transform.position);
+		//graph.GetComponent<Graph>().UpdateGraph();
 	}
 }
 

@@ -389,18 +389,24 @@ namespace CodeStory
 				dragNDropTable = RayForDragNDropTable();
 				GameObject classManager = GameObject.Find("TableManager");
 				dragNDropClass = classManager.GetComponent<TableManager>().copiedClass;
-
+		
 				if (!dragNDropClass) return;
+
+				Graph graph = GetComponentInChildren<Graph>();
+				GameObject newClass = graph.GetComponent<Graph>().AddNode();
+				classManager.GetComponent<TableManager>().CopyClass(dragNDropClass, dragNDropTable, idOfClass++, newClass);
+
+				WriteAction("addClass", graph.GetComponentInParent<Table>(), newClass, Int32.Parse(newClass.name), null, 0, null, new Vector3(0, 0, 0), null, null);
+
 			}
 
 			if (dragNDropClass && dragNDropTable)
 			{
-				//copy.transform.parent = dragNDropTable.transform;
+				/*
+				//Graph graph = GetComponentInChildren<Graph>();
+				//GameObject newClass = graph.GetComponent<Graph>().AddNode();
 
-				Graph graph = GetComponentInChildren<Graph>();
-				GameObject newClass = graph.GetComponent<Graph>().AddNode();
-
-
+				
 				//get strings from old table
 				Transform background = dragNDropClass.gameObject.transform.GetChild(0);
 				String header = background.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text;
@@ -427,6 +433,7 @@ namespace CodeStory
 				Debug.Log("Position of table " + graph.transform.position);
 				Debug.Log("Position of go " + gameObject.transform.position);
 				graph.GetComponent<Graph>().UpdateGraph();
+				*/
 			}
 			else Debug.Log("NEJDE");
 			
