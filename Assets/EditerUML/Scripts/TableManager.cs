@@ -59,6 +59,7 @@ public class TableManager : MonoBehaviour {
         InitNewTable(go);
 		if (tableShowcaseON)
 		{
+
 			AddTableDuringShowcase();
 		}
 			
@@ -192,7 +193,6 @@ public class TableManager : MonoBehaviour {
 	float startAng = -90;
 	public void TestTableShowcase()
 	{
-		Debug.Log("Number of tables: " +allTables.Count);
 		if (allTables.Count == 2)
 			startAng = -45;
 		else if (allTables.Count == 3)
@@ -200,7 +200,6 @@ public class TableManager : MonoBehaviour {
 		else
 			startAng = -90;
 		//go to preview positions
-		Debug.Log("----");
 		if (!tableShowcaseON) {
 
 			float radius = Circuit();
@@ -243,23 +242,18 @@ public class TableManager : MonoBehaviour {
 		else
 			startAng = -90;
 		//go to preview positions
-		Debug.Log("----");
 		if (!tableShowcaseON)
 		{
 
 			float radius = Circuit();
 			float rightAngle = 180 / allTables.Count;
 			Vector3 center = new Vector3(0, 0, 0);
-			Debug.Log(center);
 			foreach (Table t in allTables)
 			{
-				//Debug.Log("name: " + t.name + " has default : " + t.defaultPosition);
 				if (t.defaultPosition == Vector3.zero)
 					t.defaultPosition = t.transform.position;
-				t.defaultPosition = t.defaultPosition;
 				center.y = t.transform.position.y;
 				Vector3 pos = GetToCircle(center, radius, rightAngle);
-				Debug.Log(center + " " + radius + " " + rightAngle + " " + pos);
 				t.whereToLook = center;
 				t.GetComponent<Table>().targetPosition = pos;
 				t.GetComponent<Table>().moveTable = true;
