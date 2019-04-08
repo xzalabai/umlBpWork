@@ -368,4 +368,38 @@ public class BackManager : MonoBehaviour {
 
 		return edges;
 	}
+
+	public void WriteAction(string type, Table table, GameObject class1, int class1ID, GameObject class2, int class2ID, LineRenderer line, Vector3 previousPos, string writtenText, List<int> allAssociations)
+	{
+		switch (type)
+		{
+			case "addClass":
+				GetComponent<BackManager>().AddClassAction(class1, table);
+				break;
+			case "deleteClass":
+				Debug.Log(allAssociations.Count + "xxxxxxxxx");
+				GetComponent<BackManager>().DeleteClassAction(table, class1, class1ID, previousPos, writtenText, allAssociations);
+				break;
+			case "addAssociation":
+				GetComponent<BackManager>().AddAssociationAction(table, line, class1, class1ID, class2, class2ID);
+				break;
+			case "deleteAssociation":
+				Debug.Log("UNDO ON delete is not working now");
+				GetComponent<BackManager>().DeleteAssociationAction(line, class1, 0, class2, 0);
+				break;
+			case "changeHeader":
+				GetComponent<BackManager>().ChangeHeaderAction(table, class1, class1ID, writtenText);
+				break;
+			case "changeAttributes":
+				GetComponent<BackManager>().ChangeAttributesAction(table, class1, class1ID, writtenText);
+				break;
+			case "changeMethods":
+				GetComponent<BackManager>().ChangeMethodsAction(table, class1, class1ID, writtenText);
+				break;
+			default:
+				Debug.Log("WRONG BACK OPERATION");
+				break;
+		}
+
+	}
 }
