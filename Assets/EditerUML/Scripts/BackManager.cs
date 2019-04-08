@@ -53,15 +53,13 @@ public class BackManager : MonoBehaviour {
 
 	};
 	public Stack<Action> previousActions = new Stack<Action>();
-	public UnityEngine.UI.Slider tableNumber;
 	Table t;
 	Action undoMove;
 	//public Clickable clickable;
-	public GameObject clicksManager;
 
 	// Use this for initialization
 	void Start () {
-		clicksManager = GameObject.Find("ClicksManager");
+
 	}
 	
 	// Update is called once per frame
