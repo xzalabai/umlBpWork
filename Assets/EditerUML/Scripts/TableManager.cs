@@ -58,12 +58,7 @@ public class TableManager : MonoBehaviour {
 	{
         //creating new tablw with graph
         var go = GameObject.Instantiate(tablePrefab);
-        InitNewTable(go);
-		if (tableShowcaseON)
-		{
-			AddTableDuringShowcase();
-		}
-			
+        InitNewTable(go);	
     }
 
     public void InitNewTable(GameObject instantiatedTable)
@@ -88,6 +83,11 @@ public class TableManager : MonoBehaviour {
         lastTablePosition = lastTablePosition + distanceBetweenTables;
 
         allTables.Add(table);
+
+        if (tableShowcaseON)
+		{
+			AddTableDuringShowcase();
+		}
 
     }
 
