@@ -444,7 +444,7 @@ namespace CodeStory
 		public void WriteAction(string type, Table table, GameObject class1, int class1ID, GameObject class2, int class2ID, LineRenderer line, Vector3 previousPos, string writtenText, List<int> allAssociations)
 		{
 			BackManager backManager = table.GetComponentInChildren<BackManager>();
-			backManager.GetComponent<BackManager>().WriteAction(type, table, class1, class1ID, class2, class2ID, line, previousPos, writtenText, allAssociations);
+			backManager.GetComponent<BackManager>().WriteAction(type, table, class1, class1ID, class2, class2ID, line, previousPos, writtenText, allAssociations, null);
 			/*switch (type)
 			{
 				case "addClass":

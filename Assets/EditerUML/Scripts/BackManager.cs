@@ -50,6 +50,7 @@ public class BackManager : MonoBehaviour {
 		public GameObject class2;
 		public int class2Id;
 		public LineRenderer line;
+		public System.Action<Action> undoFunction;
 
 	};
 	public Stack<Action> previousActions = new Stack<Action>();
@@ -79,7 +80,8 @@ public class BackManager : MonoBehaviour {
 		switch (undoMove.typeOfAction)
 		{
 			case "addClass":
-				ExecuteAddClass(); //this will delete a table
+				undoMove.undoFunction.Invoke(undoMove);
+		//		ExecuteAddClass(); //this will delete a table
 				break;
 			case "deleteClass":
 				ExecuteDeleteClass(); //this will add a deleted table
@@ -148,7 +150,7 @@ public class BackManager : MonoBehaviour {
 		}
 	}
 
-	void ExecuteAddClass() 
+	static void ExecuteAddClass(Action undoMove) 
 	{
 		GameObject classGO = getClass(undoMove);
 		Graph g =classGO.GetComponentInParent<Graph>();
@@ -185,13 +187,21 @@ public class BackManager : MonoBehaviour {
 		
 	}
 
-	public void AddClassAction(GameObject classGO, Table table) {
+	public void AddClassAction(GameObject classGO, Table table, System.Action<Action> undoFuntion) {
 		var action = new Action();
 		//Action action;
 		action.typeOfAction = "addClass";
 		action.class1Id = Int32.Parse(classGO.transform.name);
 		action.table = table;
 		action.class1 = classGO;
+		if (undoFuntion == null)
+		{
+			action.undoFunction = ExecuteAddClass;
+		}
+		else
+		{
+			action.undoFunction = undoFuntion;
+		}
 		previousActions.Push(action);
 	}
 
@@ -303,7 +313,7 @@ public class BackManager : MonoBehaviour {
 	}
 
 
-	GameObject getClass(Action act)
+	static GameObject getClass(Action act)
 	{
 		string name = act.class1Id.ToString();
 
@@ -367,12 +377,12 @@ public class BackManager : MonoBehaviour {
 		return edges;
 	}
 
-	public void WriteAction(string type, Table table, GameObject class1, int class1ID, GameObject class2, int class2ID, LineRenderer line, Vector3 previousPos, string writtenText, List<int> allAssociations)
+	public void WriteAction(string type, Table table, GameObject class1, int class1ID, GameObject class2, int class2ID, LineRenderer line, Vector3 previousPos, string writtenText, List<int> allAssociations, System.Action<Action> undoFunction)
 	{
 		switch (type)
 		{
 			case "addClass":
-				GetComponent<BackManager>().AddClassAction(class1, table);
+				GetComponent<BackManager>().AddClassAction(class1, table, undoFunction);
 				break;
 			case "deleteClass":
 				Debug.Log(allAssociations.Count + "xxxxxxxxx");
