@@ -440,40 +440,11 @@ namespace CodeStory
 		}
 
 
-
+		//function that will send action to BackMan
 		public void WriteAction(string type, Table table, GameObject class1, int class1ID, GameObject class2, int class2ID, LineRenderer line, Vector3 previousPos, string writtenText, List<int> allAssociations)
 		{
 			BackManager backManager = table.GetComponentInChildren<BackManager>();
 			backManager.GetComponent<BackManager>().WriteAction(type, table, class1, class1ID, class2, class2ID, line, previousPos, writtenText, allAssociations, null);
-			/*switch (type)
-			{
-				case "addClass":
-					backManager.GetComponent<BackManager>().AddClassAction(class1, table);
-					break;
-				case "deleteClass":
-					Debug.Log(allAssociations.Count + "xxxxxxxxx");
-					backManager.GetComponent<BackManager>().DeleteClassAction(table, class1, class1ID, previousPos, writtenText, allAssociations);
-					break;
-				case "addAssociation":
-					backManager.GetComponent<BackManager>().AddAssociationAction(table, line, class1, class1ID, class2, class2ID);
-					break;
-				case "deleteAssociation":
-					Debug.Log("UNDO ON delete is not working now");
-					backManager.GetComponent<BackManager>().DeleteAssociationAction(line, class1,0, class2, 0);
-					break;
-				case "changeHeader":
-					backManager.GetComponent<BackManager>().ChangeHeaderAction(table, class1, class1ID, writtenText);
-					break;
-				case "changeAttributes":
-					backManager.GetComponent<BackManager>().ChangeAttributesAction(table, class1, class1ID, writtenText);
-					break;
-				case "changeMethods":
-					backManager.GetComponent<BackManager>().ChangeMethodsAction(table, class1, class1ID, writtenText);
-					break;
-				default:
-					Debug.Log("WRONG BACK OPERATION");
-					break;
-			}*/
 			
 		}
 

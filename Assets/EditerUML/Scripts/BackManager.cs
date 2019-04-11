@@ -84,22 +84,22 @@ public class BackManager : MonoBehaviour {
 		//		ExecuteAddClass(); //this will delete a table
 				break;
 			case "deleteClass":
-				ExecuteDeleteClass(); //this will add a deleted table
+				undoMove.undoFunction.Invoke(undoMove); //this will add a deleted table
 				break;
 			case "addAssociation":
-				ExecuteAddAssociation(); //this will add a deleted table
+				undoMove.undoFunction.Invoke(undoMove);//this will add a deleted table
 				break;
 			case "deleteAssociation":
-				ExecuteDeleteAssociation(); //this will add a deleted table
+				undoMove.undoFunction.Invoke(undoMove); //this will add a deleted table
 				break;
 			case "changeHeader":
-				ExecuteChangeText("header"); //this will add a deleted table
+				undoMove.undoFunction.Invoke(undoMove); //this will add a deleted table
 				break;
 			case "changeMethods":
-				ExecuteChangeText("methods"); //this will add a deleted table
+				undoMove.undoFunction.Invoke(undoMove); //this will add a deleted table
 				break;
 			case "changeAttributes":
-				ExecuteChangeText("attributes"); //this will add a deleted table
+				undoMove.undoFunction.Invoke(undoMove); //this will add a deleted table
 				break;
 			default:
 				Debug.Log("Unknown undo move");
@@ -107,22 +107,22 @@ public class BackManager : MonoBehaviour {
 		}
 	}
 
-	void ExecuteAddAssociation()
+	static void ExecuteAddAssociation(Action undoMove)
 	{
 		GameObject class1 = getClass(undoMove);
 		GameObject class2 = getClass2(undoMove);
-
+		
 		Graph g = class1.GetComponentInParent<Graph>(); //we get the graph in which is line
 
 		if (g == null) class2.GetComponentInParent<Graph>();
 
 		GameObject line = getLine(undoMove);
 
-		line.SetActive(false);
-		//g.GetComponent<Graph>().RemoveEdge(undoMove.line.gameObject);
+		//line.SetActive(false);
+		g.GetComponent<Graph>().RemoveEdge(undoMove.line.gameObject);
 	}
 
-	void ExecuteDeleteAssociation()
+	static void ExecuteDeleteAssociation(Action undoMove)
 	{
 		GameObject from = getClass(undoMove);
 		GameObject to = getClass2(undoMove);
@@ -131,34 +131,41 @@ public class BackManager : MonoBehaviour {
 		GameObject line = g.GetComponent<Graph>().AddEdge(undoMove.class1, undoMove.class2);
 		line.tag = "line";
 	}
-
-	void ExecuteChangeText(string type)
+	static void ExecuteChangeHeader(Action undoMove)
 	{
 		GameObject undoClass = getClass(undoMove);
 		Transform newBackground = undoClass.gameObject.transform.GetChild(0);
+
+		newBackground.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = undoMove.class1Header;
+	}
 		
-		if (type == "header"){
-			newBackground.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = undoMove.class1Header;
-		}
-		if (type == "methods")
-		{
-			newBackground.gameObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = undoMove.class1Methods;
-		}
-		if (type == "attributes")
-		{
-			newBackground.gameObject.transform.GetChild(4).GetComponent<TextMeshProUGUI>().text = undoMove.class1Attributes;
-		}
+
+	static void ExecuteChangeMethods(Action undoMove)
+	{
+		GameObject undoClass = getClass(undoMove);
+		Transform newBackground = undoClass.gameObject.transform.GetChild(0);
+	
+		newBackground.gameObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = undoMove.class1Methods;
+		
+	}
+	static void ExecuteChangeAttributes(Action undoMove)
+	{
+		GameObject undoClass = getClass(undoMove);
+		Transform newBackground = undoClass.gameObject.transform.GetChild(0);
+
+		newBackground.gameObject.transform.GetChild(4).GetComponent<TextMeshProUGUI>().text = undoMove.class1Attributes;
+
 	}
 
 	static void ExecuteAddClass(Action undoMove) 
 	{
 		GameObject classGO = getClass(undoMove);
 		Graph g =classGO.GetComponentInParent<Graph>();
-		classGO.SetActive(false);
-		//g.GetComponent<Graph>().RemoveNode(undoMove.class1);
+		//classGO.SetActive(false);
+		g.GetComponent<Graph>().RemoveNode(classGO);
 	}
 
-	void ExecuteDeleteClass()
+	static void ExecuteDeleteClass(Action undoMove)
 	{
 		Table table = undoMove.table;
 		Graph graph = table.GetComponentInChildren<Graph>();
@@ -189,37 +196,41 @@ public class BackManager : MonoBehaviour {
 
 	public void AddClassAction(GameObject classGO, Table table, System.Action<Action> undoFuntion) {
 		var action = new Action();
-		//Action action;
 		action.typeOfAction = "addClass";
 		action.class1Id = Int32.Parse(classGO.transform.name);
 		action.table = table;
 		action.class1 = classGO;
+
+		//if there is undoFunction (Martin's approach), we will save his function as undo function. If not, we will send ours
 		if (undoFuntion == null)
-		{
 			action.undoFunction = ExecuteAddClass;
-		}
 		else
-		{
 			action.undoFunction = undoFuntion;
-		}
+
 		previousActions.Push(action);
 	}
 
-	public void DeleteClassAction(Table table, GameObject classGO, int id, Vector3 previousPos, string wholeText, List<int> associatedWith)
+	public void DeleteClassAction(Table table, GameObject classGO, int id, Vector3 previousPos, string wholeText, List<int> associatedWith, System.Action<Action> undoFuntion)
 	{
 		var action = new Action();
 		action.typeOfAction = "deleteClass";
 		action.class1 = classGO;
-		Debug.Log("CLASS ID " + id);
 		action.class1Id = id;
 		action.class1Position = previousPos;
 		action.table = table;
 		action.associatedWith = associatedWith;
 		action.class1WholeText = wholeText;
+
+		//if there is undoFunction (Martin's approach), we will save his function as undo function. If not, we will send ours
+		if (undoFuntion == null)
+			action.undoFunction = ExecuteDeleteClass;
+		else
+			action.undoFunction = undoFuntion;
+
 		previousActions.Push(action);
 	}
 
-	public void AddAssociationAction(Table table, LineRenderer line, GameObject c1,int id1, GameObject c2, int id2)
+	public void AddAssociationAction(Table table, LineRenderer line, GameObject c1,int id1, GameObject c2, int id2, System.Action<Action> undoFuntion)
 	{
 		var action = new Action();
 		action.typeOfAction = "addAssociation";
@@ -229,10 +240,15 @@ public class BackManager : MonoBehaviour {
 		action.class2Id = id2;
 		action.class2 = c2;
 		action.line = line;
+		//if there is undoFunction (Martin's approach), we will save his function as undo function. If not, we will send ours
+		if (undoFuntion == null)
+			action.undoFunction = ExecuteAddAssociation;
+		else
+			action.undoFunction = undoFuntion;
 		previousActions.Push(action);
 	}
 
-	public void DeleteAssociationAction(LineRenderer line, GameObject c1, int id1, GameObject c2, int id2)
+	public void DeleteAssociationAction(LineRenderer line, GameObject c1, int id1, GameObject c2, int id2, System.Action<Action> undoFuntion)
 	{
 		var action = new Action();
 		action.typeOfAction = "deleteAssociation";
@@ -241,10 +257,15 @@ public class BackManager : MonoBehaviour {
 		action.class1Id = id1;
 		action.class2Id = id2;
 		action.line = line;
+		//if there is undoFunction (Martin's approach), we will save his function as undo function. If not, we will send ours
+		if (undoFuntion == null)
+			action.undoFunction = ExecuteDeleteAssociation;
+		else
+			action.undoFunction = undoFuntion;
 		previousActions.Push(action);
 	}
 
-	public void ChangeHeaderAction(Table table, GameObject c1, int id, string changedText)
+	public void ChangeHeaderAction(Table table, GameObject c1, int id, string changedText, System.Action<Action> undoFuntion)
 	{
 		var action = new Action();
 		action.typeOfAction = "changeHeader";
@@ -252,10 +273,15 @@ public class BackManager : MonoBehaviour {
 		action.class1Id = id;
 		action.table = table;
 		action.class1Header = changedText;
+		//if there is undoFunction (Martin's approach), we will save his function as undo function. If not, we will send ours
+		if (undoFuntion == null)
+			action.undoFunction = ExecuteChangeHeader;
+		else
+			action.undoFunction = undoFuntion;
 		previousActions.Push(action);
 	}
 
-	public void ChangeMethodsAction(Table table, GameObject c1, int id, string changedText)
+	public void ChangeMethodsAction(Table table, GameObject c1, int id, string changedText, System.Action<Action> undoFuntion)
 	{
 		var action = new Action();
 		action.typeOfAction = "changeMethods";
@@ -263,10 +289,16 @@ public class BackManager : MonoBehaviour {
 		action.class1Id = id;
 		action.table = table;
 		action.class1Methods = changedText;
+		//if there is undoFunction (Martin's approach), we will save his function as undo function. If not, we will send ours
+		if (undoFuntion == null)
+			action.undoFunction = ExecuteChangeMethods;
+		else
+			action.undoFunction = undoFuntion;
+
 		previousActions.Push(action);
 	}
 
-	public void ChangeAttributesAction(Table table, GameObject c1, int id, string changedText)
+	public void ChangeAttributesAction(Table table, GameObject c1, int id, string changedText,  System.Action<Action> undoFuntion)
 	{
 		var action = new Action();
 		action.typeOfAction = "changeAttributes";
@@ -274,10 +306,15 @@ public class BackManager : MonoBehaviour {
 		action.class1Id = id;
 		action.table = table;
 		action.class1Attributes = changedText;
+		//if there is undoFunction (Martin's approach), we will save his function as undo function. If not, we will send ours
+		if (undoFuntion == null)
+			action.undoFunction = ExecuteChangeAttributes;
+		else
+			action.undoFunction = undoFuntion;
 		previousActions.Push(action);
 	}
 
-	GameObject getLine(Action act)
+	static GameObject getLine(Action act)
 	{
 		int from = act.class1Id;
 		int to = act.class2Id;
@@ -327,7 +364,7 @@ public class BackManager : MonoBehaviour {
 		return null;
 	}
 
-	GameObject getClass2(Action act)
+	static GameObject getClass2(Action act)
 	{
 		string name = act.class2Id.ToString();
 
@@ -341,7 +378,7 @@ public class BackManager : MonoBehaviour {
 		return null;
 	}
 
-	GameObject getClass(int num, Action act)
+	static GameObject getClass(int num, Action act)
 	{
 		Graph g = act.table.GetComponentInChildren<Graph>();
 		GameObject units = g.transform.Find("Units").gameObject;
@@ -352,7 +389,7 @@ public class BackManager : MonoBehaviour {
 
 	}
 
-	public List<UEdge> FindEdgesInTable(GameObject parent, string tag)
+	static public List<UEdge> FindEdgesInTable(GameObject parent, string tag)
 	{
 		List<UEdge> edges = new List<UEdge>();
 
@@ -386,23 +423,23 @@ public class BackManager : MonoBehaviour {
 				break;
 			case "deleteClass":
 				Debug.Log(allAssociations.Count + "xxxxxxxxx");
-				GetComponent<BackManager>().DeleteClassAction(table, class1, class1ID, previousPos, writtenText, allAssociations);
+				GetComponent<BackManager>().DeleteClassAction(table, class1, class1ID, previousPos, writtenText, allAssociations, undoFunction);
 				break;
 			case "addAssociation":
-				GetComponent<BackManager>().AddAssociationAction(table, line, class1, class1ID, class2, class2ID);
+				GetComponent<BackManager>().AddAssociationAction(table, line, class1, class1ID, class2, class2ID, undoFunction);
 				break;
 			case "deleteAssociation":
 				Debug.Log("UNDO ON delete is not working now");
-				GetComponent<BackManager>().DeleteAssociationAction(line, class1, 0, class2, 0);
+				GetComponent<BackManager>().DeleteAssociationAction(line, class1, 0, class2, 0, undoFunction);
 				break;
 			case "changeHeader":
-				GetComponent<BackManager>().ChangeHeaderAction(table, class1, class1ID, writtenText);
+				GetComponent<BackManager>().ChangeHeaderAction(table, class1, class1ID, writtenText, undoFunction);
 				break;
 			case "changeAttributes":
-				GetComponent<BackManager>().ChangeAttributesAction(table, class1, class1ID, writtenText);
+				GetComponent<BackManager>().ChangeAttributesAction(table, class1, class1ID, writtenText, undoFunction);
 				break;
 			case "changeMethods":
-				GetComponent<BackManager>().ChangeMethodsAction(table, class1, class1ID, writtenText);
+				GetComponent<BackManager>().ChangeMethodsAction(table, class1, class1ID, writtenText, undoFunction);
 				break;
 			default:
 				Debug.Log("WRONG BACK OPERATION");
