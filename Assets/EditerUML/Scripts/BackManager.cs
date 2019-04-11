@@ -114,12 +114,12 @@ public class BackManager : MonoBehaviour {
 		
 		Graph g = class1.GetComponentInParent<Graph>(); //we get the graph in which is line
 
-		if (g == null) class2.GetComponentInParent<Graph>();
+		if (g == null) g = class2.GetComponentInParent<Graph>();
 
 		GameObject line = getLine(undoMove);
 
 		//line.SetActive(false);
-		g.GetComponent<Graph>().RemoveEdge(undoMove.line.gameObject);
+		g.GetComponent<Graph>().RemoveEdge(line.gameObject);
 	}
 
 	static void ExecuteDeleteAssociation(Action undoMove)
@@ -314,7 +314,7 @@ public class BackManager : MonoBehaviour {
 		previousActions.Push(action);
 	}
 
-	static GameObject getLine(Action act)
+	public static GameObject getLine(Action act)
 	{
 		int from = act.class1Id;
 		int to = act.class2Id;
@@ -350,7 +350,7 @@ public class BackManager : MonoBehaviour {
 	}
 
 
-	static GameObject getClass(Action act)
+	public static GameObject getClass(Action act)
 	{
 		string name = act.class1Id.ToString();
 
@@ -364,7 +364,7 @@ public class BackManager : MonoBehaviour {
 		return null;
 	}
 
-	static GameObject getClass2(Action act)
+	public static GameObject getClass2(Action act)
 	{
 		string name = act.class2Id.ToString();
 
