@@ -98,7 +98,10 @@ public class TableManager : MonoBehaviour {
 		//we delete it from scene
 		GameObject obj = GameObject.Find(searchedTable.ToString());
 		Destroy(obj);
-        AfterDeleteTables(searchedTable);
+		if (tableShowcaseON)
+			AfterDeleteTablesDuringShowcase(searchedTable);
+		else
+			AfterDeleteTables(searchedTable);
     }
 
     public void AfterDeleteTables(int searchedTable)
@@ -111,7 +114,6 @@ public class TableManager : MonoBehaviour {
 		{
 			Table t = allTables[0];
 			tableNumber.maxValue--;
-			//lastTablePosition = t.transform.position.z;
 			lastTablePosition = 0;
 			allTables = allTables.Where(x => x.name != searchedTable.ToString()).ToList();
 			return;
@@ -158,6 +160,66 @@ public class TableManager : MonoBehaviour {
         tableNumber.maxValue--;
         lastTablePosition = lastPosition;
     }
+
+	public void AfterDeleteTablesDuringShowcase(int searchedTable)
+	{
+		if (allTables.Count == 0)
+			return;
+		float lastPosition = 0;
+
+		if (searchedTable == 1 && allTables.Count == 1)
+		{
+			Table t = allTables[0];
+			tableNumber.maxValue--;
+			lastTablePosition = 0;
+			allTables = allTables.Where(x => x.name != searchedTable.ToString()).ToList();
+			return;
+		}
+		//if we are going to delete last table
+		if (searchedTable == allTables.Count)
+		{
+			Table t = allTables[allTables.Count - 2];
+			tableNumber.maxValue--;
+			lastTablePosition = t.defaultPosition.z;
+			allTables = allTables.Where(x => x.name != searchedTable.ToString()).ToList();
+			DeleteTableDuringShowcase();
+			return;
+		}
+
+		//we delete selected table from list of all tables
+		allTables = allTables.Where(x => x.name != searchedTable.ToString()).ToList();
+		if (edgesManager)
+			edgesManager.GetComponent<DimensionalEdges>().DeleteNestedAssociations(searchedTable);
+
+		//we will move all tables behind to 1 position in front, and every table gets new .name = id - 1;
+		foreach (Table t in allTables)
+		{
+
+			int tableId = System.Int32.Parse(t.name);
+
+			//we delete table from list 
+			if (tableId == searchedTable)
+				allTables.Remove(t);
+
+			//we iterate through all tables, to move their positions
+			if (tableId > searchedTable)
+			{
+				Vector3 pos = t.defaultPosition;
+				pos.z -= distanceBetweenTables;
+				t.defaultPosition = pos;
+				int newId = System.Int32.Parse(t.name);
+				newId--;
+				t.name = newId.ToString();
+				lastPosition = t.defaultPosition.z;
+			}
+
+
+		}
+		tableNumber.maxValue--;
+		lastTablePosition = lastPosition;
+
+		DeleteTableDuringShowcase();
+	}
 
 	public float BiggestScaleOfChildren(GameObject o)
 	{
@@ -232,6 +294,38 @@ public class TableManager : MonoBehaviour {
 			tableShowcaseON = false;
 		}
 		
+	}
+
+	Vector3 DeleteTableDuringShowcase()
+	{
+		tableShowcaseON = false;
+		if (allTables.Count == 2)
+			startAng = -45;
+		else if (allTables.Count == 3)
+			startAng = -60;
+		else
+			startAng = -90;
+		//go to preview positions
+		if (!tableShowcaseON)
+		{
+
+			float radius = Circuit();
+			float rightAngle = 180 / allTables.Count;
+			Vector3 center = new Vector3(0, 0, 0);
+			foreach (Table t in allTables)
+			{
+				if (t.defaultPosition == Vector3.zero)
+					t.defaultPosition = t.transform.position;
+				center.y = t.transform.position.y;
+				Vector3 pos = GetToCircle(center, radius, rightAngle);
+				t.whereToLook = center;
+				t.GetComponent<Table>().targetPosition = pos;
+				t.GetComponent<Table>().moveTable = true;
+			}
+			tableShowcaseON = true;
+		}
+
+		return Vector3.zero;
 	}
 
 	Vector3 AddTableDuringShowcase() {
