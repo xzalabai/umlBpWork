@@ -8,14 +8,25 @@ using System;
 public class ClassManager : MonoBehaviour {
 
 	private List<GameObject> allClasses = new List<GameObject>();
+	private List<GameObject> allcylinders = new List<GameObject>();
+	private List<dimensionalAssociation> allDimensionalAs = new List<dimensionalAssociation>();
 
-	struct dimensionalAssociation{
+	public GameObject cylinder;
+	public bool isHidden = true;
+
+	struct dimensionalAssociation
+	{
 		public LineRenderer line;
 		public GameObject from;
 		public GameObject to;
 	};
+
+	public float metricPositionX;
+	public float metricPositionY;
+	public float metricScaleRadius;
+	public float metricScaleDelta;
 	
-	List<dimensionalAssociation> allDimensionalAs = new List<dimensionalAssociation>();
+	
 
 	// Use this for initialization
 	void Start () {
@@ -23,16 +34,25 @@ public class ClassManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
 	}
 
-
-	public GameObject cylinder;
-	List<GameObject> allcylinders = new List<GameObject>();
-	public bool isHidden = true;
-
+	
 	//this function allow to show metric (later with algorhitm), or when the metrics are shown, hide them
 	public void ShowMetric()
 	{
+
+		if (metricPositionX == 0)
+			metricPositionX = 85;
+
+		if (metricPositionY == 0)
+			metricPositionY = 50;
+
+		if (metricScaleRadius == 0)
+			metricScaleRadius = 10;
+
+		if (metricScaleDelta == 0)
+			metricScaleDelta = 10;
 		if (isHidden)
 		{
 			
@@ -41,26 +61,15 @@ public class ClassManager : MonoBehaviour {
 
 			foreach (GameObject c in classes)
 			{
-				float sizeOfTable = GameObject.Find("TableManager").GetComponent<TableManager>().BiggestScaleOfChildren(c.GetComponentInParent<Table>().gameObject);				
-				float widthOfCylinder = new System.Random().Next(1, 40);
+				float widthOfCylinder = Int32.Parse(c.name) * metricScaleDelta;
 
 				//create cylinder, set size
 				var cylinder = GameObject.Instantiate(this.cylinder);
 				cylinder.transform.parent = c.transform;
-				cylinder.GetComponent<Renderer>().material.SetColor("_Color", UnityEngine.Random.ColorHSV());
-
-				cylinder.transform.localScale = new Vector3(sizeOfTable / 10, widthOfCylinder, sizeOfTable / 10);
-				cylinder.transform.position = c.transform.position;
-				cylinder.transform.position = new Vector3(cylinder.transform.position.x + sizeOfTable / 10,
-					cylinder.transform.position.y + sizeOfTable / 10,
-					cylinder.transform.position.z);
+				cylinder.GetComponent<Renderer>().material.SetColor("_Color", UnityEngine.Random.ColorHSV());	
+				cylinder.transform.localScale = new Vector3( metricScaleRadius, widthOfCylinder , metricScaleRadius);
+				cylinder.transform.localPosition = new Vector3(metricPositionX, metricPositionY, widthOfCylinder * (-1));
 				
-
-				//Vector3 scale = cy.transform.localScale;
-				//scale.y = sizeOfCylinder * cy.transform.localScale.y;
-				//cy.transform.localScale = scale;
-
-
 				allcylinders.Add(cylinder);
 			}
 			isHidden = false;
