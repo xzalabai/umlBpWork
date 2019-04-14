@@ -430,7 +430,7 @@ public class BackManager : MonoBehaviour {
 				break;
 			case "deleteAssociation":
 				Debug.Log("UNDO ON delete is not working now");
-				GetComponent<BackManager>().DeleteAssociationAction(line, class1, 0, class2, 0, undoFunction);
+				GetComponent<BackManager>().DeleteAssociationAction(line, class1, class1ID, class2, class2ID, undoFunction);
 				break;
 			case "changeHeader":
 				GetComponent<BackManager>().ChangeHeaderAction(table, class1, class1ID, writtenText, undoFunction);
