@@ -102,8 +102,10 @@ public class BackManager : MonoBehaviour {
 				undoMove.undoFunction.Invoke(undoMove); //this will add a deleted table
 				break;
 			default:
-				Debug.Log("Unknown undo move");
-				break;
+                Debug.Log("[BackManager] Executing custom undoMove: " + undoMove.typeOfAction);
+                undoMove.undoFunction.Invoke(undoMove); //this will add a deleted table
+                //Debug.Log("Unknown undo move");
+                break;
 		}
 	}
 
@@ -314,7 +316,34 @@ public class BackManager : MonoBehaviour {
 		previousActions.Push(action);
 	}
 
-	public static GameObject getLine(Action act)
+    public void ChangeCustomAction(string type, Table table, GameObject class1, int class1ID, GameObject class2, int class2ID, LineRenderer line, Vector3 previousPos, string writtenText, List<int> allAssociations, System.Action<Action> undoFunction)
+    {
+        var action = new Action();
+        action.typeOfAction = "custom: "+ type;
+        action.class1 = class1;
+        action.class1Id = class1ID;
+        action.class2 = class2;
+        action.class2Id = class2ID;
+        action.line = line;
+        action.class1Position = previousPos;
+        action.table = table;
+        action.class1WholeText = writtenText;
+        action.associatedWith = allAssociations;
+        //if there is undoFunction (Martin's approach), we will save his function as undo function. If not, we will send ours
+        if (undoFunction == null)
+        {
+            Debug.LogError("custom back function should be implemented in udno function parameter");
+            return;
+        }
+        else
+        {
+            action.undoFunction = undoFunction;
+        }
+        previousActions.Push(action);
+    }
+
+
+    public static GameObject getLine(Action act)
 	{
 		int from = act.class1Id;
 		int to = act.class2Id;
@@ -430,7 +459,7 @@ public class BackManager : MonoBehaviour {
 				break;
 			case "deleteAssociation":
 				Debug.Log("UNDO ON delete is not working now");
-				GetComponent<BackManager>().DeleteAssociationAction(line, class1, 0, class2, 0, undoFunction);
+				GetComponent<BackManager>().DeleteAssociationAction(line, class1, class1ID, class2, class2ID, undoFunction);
 				break;
 			case "changeHeader":
 				GetComponent<BackManager>().ChangeHeaderAction(table, class1, class1ID, writtenText, undoFunction);
@@ -441,8 +470,10 @@ public class BackManager : MonoBehaviour {
 			case "changeMethods":
 				GetComponent<BackManager>().ChangeMethodsAction(table, class1, class1ID, writtenText, undoFunction);
 				break;
-			default:
-				Debug.Log("WRONG BACK OPERATION");
+                break;
+            default:
+                Debug.Log("[BackManager] CustomOperation: "+type);
+                ChangeCustomAction(type, table, class1, class1ID, class2, class2ID, line, previousPos, writtenText, allAssociations, undoFunction);
 				break;
 		}
 
