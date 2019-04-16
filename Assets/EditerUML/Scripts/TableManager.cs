@@ -98,14 +98,17 @@ public class TableManager : MonoBehaviour {
 		//we delete it from scene
 		GameObject obj = GameObject.Find(searchedTable.ToString());
 		Destroy(obj);
-		if (tableShowcaseON)
-			AfterDeleteTablesDuringShowcase(searchedTable);
-		else
 			AfterDeleteTables(searchedTable);
     }
 
     public void AfterDeleteTables(int searchedTable)
     {
+		if (tableShowcaseON)
+		{
+			AfterDeleteTablesDuringShowcase(searchedTable);
+			return;
+		}
+			
 		if (allTables.Count == 0)
 			return;
 		float lastPosition = 0;
